@@ -1,14 +1,28 @@
 import React from "react";
 import Link from "next/link";
-import { Filter, Search, SlidersHorizontal } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { ProductCard } from "@/components/commerce/ProductCard";
 import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
-import { MOCK_CATEGORIES, MOCK_PRODUCTS } from "@/data/mockData";
+import { getCategories, getProducts } from "@/lib/services/catalogue";
 import styles from "./Shop.module.css";
 
-export default function ShopPage() {
+interface ShopPageProps {
+  searchParams?: Promise<{
+    q?: string;
+  }>;
+}
+
+export default async function ShopPage({ searchParams }: ShopPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const query = resolvedSearchParams.q || "";
+
+  const [categories, products] = await Promise.all([
+    getCategories({ activeOnly: true }),
+    getProducts({ activeOnly: true, search: query }),
+  ]);
+
   return (
     <PageContainer
       title="Automotive Equipment & Tools Store"
@@ -29,14 +43,14 @@ export default function ShopPage() {
               <li>
                 <Link href="/shop" className={`${styles.catLink} ${styles.activeCat}`}>
                   <span>All Equipment</span>
-                  <Badge variant="amber" size="sm" isMonospace>{MOCK_PRODUCTS.length}</Badge>
+                  <Badge variant="amber" size="sm" isMonospace>{products.length}</Badge>
                 </Link>
               </li>
-              {MOCK_CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <li key={cat.id}>
                   <Link href={`/shop/${cat.slug}`} className={styles.catLink}>
                     <span>{cat.name}</span>
-                    <Badge variant="neutral" size="sm" isMonospace>{cat.itemCount}</Badge>
+                    <Badge variant="neutral" size="sm" isMonospace>{cat.itemCount || 0}</Badge>
                   </Link>
                 </li>
               ))}
@@ -60,15 +74,16 @@ export default function ShopPage() {
               <Input
                 placeholder="Search tools by SKU, name, or vehicle protocol..."
                 prefixIcon={<Search size={16} />}
+                defaultValue={query}
               />
             </div>
             <div className={styles.inventoryCount}>
-              <span className="ac-mono">{MOCK_PRODUCTS.length} ITEMS CATALOGUED</span>
+              <span className="ac-mono">{products.length} ITEMS CATALOGUED</span>
             </div>
           </div>
 
           <div className="ac-grid ac-grid-3">
-            {MOCK_PRODUCTS.map((product) => (
+            {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

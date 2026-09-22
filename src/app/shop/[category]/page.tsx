@@ -4,10 +4,11 @@ import { notFound } from "next/navigation";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { ProductCard } from "@/components/commerce/ProductCard";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { MOCK_CATEGORIES, MOCK_PRODUCTS } from "@/data/mockData";
+import { getCategories, getCategoryBySlug, getProducts } from "@/lib/services/catalogue";
 
 export async function generateStaticParams() {
-  return MOCK_CATEGORIES.map((cat) => ({
+  const categories = await getCategories({ activeOnly: true });
+  return categories.map((cat) => ({
     category: cat.slug,
   }));
 }
@@ -20,13 +21,16 @@ interface CategoryPageProps {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category: categorySlug } = await params;
-  const category = MOCK_CATEGORIES.find((c) => c.slug === categorySlug);
+  const category = await getCategoryBySlug(categorySlug, { activeOnly: true });
 
   if (!category) {
     return notFound();
   }
 
-  const categoryProducts = MOCK_PRODUCTS.filter((p) => p.categorySlug === categorySlug);
+  const categoryProducts = await getProducts({
+    categorySlug,
+    activeOnly: true,
+  });
 
   return (
     <PageContainer

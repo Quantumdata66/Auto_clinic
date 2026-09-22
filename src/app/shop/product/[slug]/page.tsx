@@ -6,13 +6,13 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { PriceDisplay } from "@/components/commerce/PriceDisplay";
 import { StockBadge } from "@/components/commerce/StockBadge";
 import { TechnicalSpecBlock } from "@/components/workshop/TechnicalSpecBlock";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { MOCK_PRODUCTS } from "@/data/mockData";
+import { getProductBySlug, getProducts } from "@/lib/services/catalogue";
 import styles from "./ProductDetail.module.css";
 
 export async function generateStaticParams() {
-  return MOCK_PRODUCTS.map((prod) => ({
+  const products = await getProducts({ activeOnly: true });
+  return products.map((prod) => ({
     slug: prod.slug,
   }));
 }
@@ -25,7 +25,7 @@ interface ProductDetailPageProps {
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = await params;
-  const product = MOCK_PRODUCTS.find((p) => p.slug === slug);
+  const product = await getProductBySlug(slug, { activeOnly: true });
 
   if (!product) {
     return notFound();
@@ -116,6 +116,10 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           </div>
 
           <p className={styles.description}>{product.shortDescription}</p>
+
+          {product.fullDescription && (
+            <p className={styles.fullDescription}>{product.fullDescription}</p>
+          )}
 
           {/* Dual Action Conversion Box */}
           <div className={styles.actionBox}>

@@ -8,11 +8,15 @@ import { ProductCard } from "@/components/commerce/ProductCard";
 import { DiagnosticServiceCard } from "@/components/workshop/DiagnosticServiceCard";
 import { EnquiryCTA } from "@/components/workshop/EnquiryCTA";
 import { SectionWrapper } from "@/components/layout/SectionWrapper";
-import { MOCK_CATEGORIES, MOCK_PRODUCTS, MOCK_DIAGNOSTIC_SERVICES } from "@/data/mockData";
+import { getCategories, getProducts, getDiagnosticServices } from "@/lib/services/catalogue";
 import styles from "./Home.module.css";
 
-export default function HomePage() {
-  const featuredProducts = MOCK_PRODUCTS.filter((p) => p.featured).slice(0, 4);
+export default async function HomePage() {
+  const [categories, featuredProducts, diagnosticServices] = await Promise.all([
+    getCategories({ activeOnly: true }),
+    getProducts({ featuredOnly: true, limit: 4, activeOnly: true }),
+    getDiagnosticServices({ activeOnly: true }),
+  ]);
 
   return (
     <div className={styles.homeContainer}>
@@ -129,18 +133,18 @@ export default function HomePage() {
         background="surface"
       >
         <div className="ac-grid ac-grid-4">
-          {MOCK_CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <Link key={cat.id} href={`/shop/${cat.slug}`} className={styles.catCard}>
               <div className={styles.catIconWrapper}>
-                {cat.id === "cat-1" && <Cpu size={24} />}
-                {cat.id === "cat-2" && <Zap size={24} />}
-                {cat.id === "cat-3" && <Wrench size={24} />}
-                {cat.id === "cat-4" && <ShieldCheck size={24} />}
+                {cat.slug === "diagnostic-scanners" && <Cpu size={24} />}
+                {cat.slug === "electrical-battery" && <Zap size={24} />}
+                {cat.slug === "workshop-tools" && <Wrench size={24} />}
+                {cat.slug === "accessories-safety" && <ShieldCheck size={24} />}
               </div>
               <h3 className={styles.catName}>{cat.name}</h3>
               <p className={styles.catDesc}>{cat.description}</p>
               <div className={styles.catFooter}>
-                <span className="ac-mono">{cat.itemCount} Equipment Models</span>
+                <span className="ac-mono">{cat.itemCount || 0} Models</span>
                 <ArrowRight size={14} className={styles.catArrow} />
               </div>
             </Link>
@@ -176,7 +180,7 @@ export default function HomePage() {
         background="surface"
       >
         <div className="ac-grid ac-grid-2">
-          {MOCK_DIAGNOSTIC_SERVICES.slice(0, 2).map((service) => (
+          {diagnosticServices.slice(0, 2).map((service) => (
             <DiagnosticServiceCard key={service.id} service={service} />
           ))}
         </div>
