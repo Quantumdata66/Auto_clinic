@@ -1,0 +1,105 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-2);
+}
+
+.groupLabel {
+  font-size: var(--ac-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ac-text-secondary);
+}
+
+.optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-2);
+}
+
+.radioCard {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ac-space-3);
+  padding: var(--ac-space-3) var(--ac-space-4);
+  background-color: var(--ac-bg-surface);
+  border: 1px solid var(--ac-border-default);
+  border-radius: var(--ac-radius-sm);
+  cursor: pointer;
+  transition: all var(--ac-transition-fast);
+}
+
+.radioCard:hover:not(.disabled) {
+  border-color: var(--ac-border-strong);
+  background-color: var(--ac-bg-surface-elevated);
+}
+
+.radioCard.selected {
+  border-color: var(--ac-accent-amber);
+  background-color: rgba(245, 158, 11, 0.05);
+}
+
+.radioCard.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nativeRadio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.customRadio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--ac-bg-base);
+  border: 1px solid var(--ac-border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all var(--ac-transition-fast);
+}
+
+.nativeRadio:focus-visible + .customRadio {
+  box-shadow: var(--ac-focus-ring);
+}
+
+.selected .customRadio {
+  border-color: var(--ac-accent-amber);
+}
+
+.selected .customRadio::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--ac-accent-amber);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.optionLabel {
+  font-size: var(--ac-text-sm);
+  font-weight: 600;
+  color: var(--ac-text-primary);
+}
+
+.optionDesc {
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-secondary);
+}
+
+.errorText {
+  font-size: var(--ac-text-xs);
+  color: var(--ac-status-danger);
+}

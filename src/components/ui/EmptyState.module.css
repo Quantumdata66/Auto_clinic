@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--ac-space-12) var(--ac-space-6);
+  background-color: var(--ac-bg-surface);
+  border: 1px dashed var(--ac-border-strong);
+  border-radius: var(--ac-radius-md);
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.iconCircle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--ac-bg-surface-elevated);
+  border: 1px solid var(--ac-border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--ac-space-4);
+}
+
+.defaultIcon {
+  color: var(--ac-text-muted);
+}
+
+.title {
+  font-size: var(--ac-text-lg);
+  font-weight: 700;
+  color: var(--ac-text-primary);
+  margin-bottom: var(--ac-space-2);
+}
+
+.description {
+  font-size: var(--ac-text-sm);
+  color: var(--ac-text-secondary);
+  line-height: var(--ac-leading-normal);
+  max-width: 400px;
+  margin-bottom: var(--ac-space-6);
+}
+
+.actionWrapper {
+  display: flex;
+  gap: var(--ac-space-3);
+}

@@ -1,0 +1,59 @@
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ac-space-2);
+  padding: var(--ac-space-2) var(--ac-space-3);
+  background-color: var(--ac-bg-surface-elevated);
+  border: 1px solid var(--ac-border-default);
+  border-radius: var(--ac-radius-sm);
+  color: var(--ac-text-primary);
+  text-decoration: none;
+  font-size: var(--ac-text-sm);
+  font-weight: 600;
+  transition: all var(--ac-transition-fast);
+}
+
+.trigger:hover {
+  background-color: var(--ac-bg-surface-highlight);
+  border-color: var(--ac-accent-amber);
+  color: var(--ac-accent-amber);
+}
+
+.iconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  color: inherit;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background-color: var(--ac-accent-amber);
+  color: #0f1115;
+  font-family: var(--ac-font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 0 4px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: var(--ac-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .label {
+    display: inline;
+  }
+}

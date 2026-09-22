@@ -1,0 +1,117 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--ac-bg-overlay);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ac-space-4);
+  z-index: 1000;
+  animation: fadeIn var(--ac-transition-fast);
+}
+
+.dialog {
+  background-color: var(--ac-bg-surface-elevated);
+  border: 1px solid var(--ac-border-strong);
+  border-radius: var(--ac-radius-md);
+  box-shadow: var(--ac-shadow-lg);
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  animation: slideUp var(--ac-transition-fast);
+}
+
+.dialog::before {
+  content: "";
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--ac-accent-amber),
+    var(--ac-accent-amber) 6px,
+    var(--ac-bg-surface-elevated) 6px,
+    var(--ac-bg-surface-elevated) 12px
+  );
+}
+
+.sm { max-width: 420px; }
+.md { max-width: 560px; }
+.lg { max-width: 720px; }
+.xl { max-width: 960px; }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ac-space-4) var(--ac-space-6);
+  border-bottom: 1px solid var(--ac-border-subtle);
+  background-color: var(--ac-bg-surface);
+}
+
+.titleWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  font-size: var(--ac-text-lg);
+  font-weight: 700;
+  color: var(--ac-text-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-secondary);
+  margin: 0;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--ac-text-muted);
+  cursor: pointer;
+  padding: var(--ac-space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--ac-radius-sm);
+  transition: all var(--ac-transition-fast);
+}
+
+.closeBtn:hover {
+  color: var(--ac-text-primary);
+  background-color: var(--ac-bg-surface-highlight);
+}
+
+.body {
+  padding: var(--ac-space-6);
+  overflow-y: auto;
+  color: var(--ac-text-primary);
+}
+
+.footer {
+  padding: var(--ac-space-4) var(--ac-space-6);
+  background-color: var(--ac-bg-surface);
+  border-top: 1px solid var(--ac-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ac-space-3);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

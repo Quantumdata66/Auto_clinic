@@ -1,0 +1,346 @@
+.homeContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.heroSection {
+  background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
+              linear-gradient(180deg, var(--ac-bg-surface) 0%, var(--ac-bg-base) 100%);
+  border-bottom: 1px solid var(--ac-border-subtle);
+  padding: var(--ac-space-12) 0 var(--ac-space-16) 0;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .heroSection {
+    padding: var(--ac-space-16) 0 var(--ac-space-20) 0;
+  }
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ac-space-10);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .heroGrid {
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: var(--ac-space-12);
+  }
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-4);
+}
+
+.heroEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ac-space-2);
+  font-size: var(--ac-text-xs);
+  font-weight: 700;
+  color: var(--ac-accent-amber);
+  background-color: var(--ac-accent-amber-subtle);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 4px var(--ac-space-3);
+  border-radius: var(--ac-radius-sm);
+  width: fit-content;
+}
+
+.pulseDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--ac-accent-amber);
+  box-shadow: 0 0 8px var(--ac-accent-amber);
+}
+
+.heroLead {
+  font-size: var(--ac-text-base);
+  color: var(--ac-text-secondary);
+  line-height: var(--ac-leading-relaxed);
+  max-width: 620px;
+}
+
+@media (min-width: 768px) {
+  .heroLead {
+    font-size: var(--ac-text-lg);
+  }
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ac-space-3);
+  padding-top: var(--ac-space-2);
+}
+
+.pillarStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ac-space-4);
+  padding-top: var(--ac-space-4);
+  border-top: 1px solid var(--ac-border-subtle);
+}
+
+.pillarItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ac-space-2);
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-secondary);
+  font-family: var(--ac-font-mono);
+}
+
+.pillarIcon {
+  color: var(--ac-accent-amber);
+}
+
+.heroGraphicPanel {
+  display: flex;
+  justify-content: center;
+}
+
+.telemetryCard {
+  background-color: var(--ac-bg-surface-elevated);
+  border: 1px solid var(--ac-border-strong);
+  border-radius: var(--ac-radius-md);
+  box-shadow: var(--ac-shadow-lg);
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.telemetryCard::before {
+  content: "";
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--ac-accent-amber),
+    var(--ac-accent-amber) 6px,
+    var(--ac-bg-surface-elevated) 6px,
+    var(--ac-bg-surface-elevated) 12px
+  );
+}
+
+.telemetryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ac-space-3) var(--ac-space-4);
+  background-color: var(--ac-bg-surface);
+  border-bottom: 1px solid var(--ac-border-subtle);
+}
+
+.telemetryStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--ac-space-2);
+  font-size: var(--ac-text-xs);
+  font-weight: 700;
+  color: var(--ac-text-primary);
+}
+
+.statusPulseIcon {
+  color: var(--ac-status-success);
+}
+
+.telemetryGrid {
+  padding: var(--ac-space-4);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ac-space-3);
+}
+
+.telemetryStat {
+  background-color: var(--ac-bg-base);
+  border: 1px solid var(--ac-border-subtle);
+  border-radius: var(--ac-radius-sm);
+  padding: var(--ac-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statLabel {
+  font-family: var(--ac-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ac-accent-amber);
+  letter-spacing: 0.05em;
+}
+
+.statValue {
+  font-family: var(--ac-font-sans);
+  font-size: var(--ac-text-xs);
+  font-weight: 600;
+  color: var(--ac-text-primary);
+}
+
+.telemetryFooter {
+  padding: var(--ac-space-3) var(--ac-space-4);
+  background-color: var(--ac-bg-surface);
+  border-top: 1px solid var(--ac-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.signalBar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.signalBlock {
+  width: 6px;
+  height: 12px;
+  background-color: var(--ac-accent-amber);
+  border-radius: 1px;
+}
+
+.telemetryNotice {
+  font-family: var(--ac-font-mono);
+  font-size: 10px;
+  color: var(--ac-text-muted);
+}
+
+/* Category Cards */
+.catCard {
+  background-color: var(--ac-bg-card);
+  border: 1px solid var(--ac-border-default);
+  border-radius: var(--ac-radius-md);
+  padding: var(--ac-space-5);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-2);
+  transition: all var(--ac-transition-fast);
+}
+
+.catCard:hover {
+  border-color: var(--ac-accent-amber);
+  box-shadow: var(--ac-shadow-md);
+  transform: translateY(-2px);
+}
+
+.catIconWrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ac-radius-sm);
+  background-color: var(--ac-bg-surface-elevated);
+  border: 1px solid var(--ac-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ac-accent-amber);
+  margin-bottom: var(--ac-space-2);
+}
+
+.catName {
+  font-size: var(--ac-text-base);
+  font-weight: 700;
+  color: var(--ac-text-primary);
+  margin: 0;
+}
+
+.catDesc {
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-secondary);
+  line-height: var(--ac-leading-normal);
+  margin: 0;
+}
+
+.catFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: var(--ac-space-3);
+  border-top: 1px solid var(--ac-border-subtle);
+  font-size: 11px;
+  color: var(--ac-text-muted);
+}
+
+.catArrow {
+  color: var(--ac-accent-amber);
+  transition: transform var(--ac-transition-fast);
+}
+
+.catCard:hover .catArrow {
+  transform: translateX(3px);
+}
+
+/* Workflow Explainer */
+.workflowExplainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ac-space-4);
+  margin-top: var(--ac-space-8);
+  background-color: var(--ac-bg-base);
+  border: 1px solid var(--ac-border-default);
+  border-radius: var(--ac-radius-md);
+  padding: var(--ac-space-6);
+}
+
+@media (min-width: 768px) {
+  .workflowExplainer {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.workflowStep {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ac-space-3);
+}
+
+.stepNum {
+  font-family: var(--ac-font-mono);
+  font-size: var(--ac-text-lg);
+  font-weight: 800;
+  color: var(--ac-accent-amber);
+  background-color: var(--ac-accent-amber-subtle);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--ac-radius-sm);
+  padding: 2px var(--ac-space-2);
+  line-height: 1;
+}
+
+.stepInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stepTitle {
+  font-size: var(--ac-text-sm);
+  font-weight: 700;
+  color: var(--ac-text-primary);
+  margin: 0;
+}
+
+.stepText {
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-secondary);
+  line-height: var(--ac-leading-normal);
+  margin: 0;
+}
+
+.credText {
+  font-size: var(--ac-text-sm);
+  color: var(--ac-text-secondary);
+  line-height: var(--ac-leading-normal);
+  margin: 0;
+}
+
+.ctaSection {
+  padding: var(--ac-space-12) 0 var(--ac-space-16) 0;
+}

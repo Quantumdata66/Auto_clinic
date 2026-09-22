@@ -1,0 +1,86 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-1);
+  width: 100%;
+}
+
+.label {
+  font-size: var(--ac-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ac-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--ac-space-1);
+}
+
+.required {
+  color: var(--ac-accent-amber);
+}
+
+.selectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--ac-bg-surface);
+  border: 1px solid var(--ac-border-default);
+  border-radius: var(--ac-radius-sm);
+  transition: all var(--ac-transition-fast);
+  height: 42px;
+}
+
+.selectWrapper:focus-within {
+  border-color: var(--ac-accent-amber);
+  box-shadow: 0 0 0 1px var(--ac-accent-amber);
+}
+
+.selectWrapper.hasError {
+  border-color: var(--ac-status-danger);
+}
+
+.selectWrapper.isDisabled {
+  opacity: 0.6;
+  background-color: var(--ac-bg-surface-elevated);
+  cursor: not-allowed;
+}
+
+.select {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  color: var(--ac-text-primary);
+  font-family: var(--ac-font-sans);
+  font-size: var(--ac-text-sm);
+  padding: 0 var(--ac-space-8) 0 var(--ac-space-3);
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.select option {
+  background-color: var(--ac-bg-surface-elevated);
+  color: var(--ac-text-primary);
+}
+
+.arrow {
+  position: absolute;
+  right: var(--ac-space-3);
+  font-size: 10px;
+  color: var(--ac-text-muted);
+  pointer-events: none;
+}
+
+.errorText {
+  font-size: var(--ac-text-xs);
+  color: var(--ac-status-danger);
+  margin-top: 2px;
+}
+
+.helperText {
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-muted);
+  margin-top: 2px;
+}

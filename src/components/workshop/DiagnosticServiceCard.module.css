@@ -1,0 +1,151 @@
+.card {
+  background-color: var(--ac-bg-card);
+  border: 1px solid var(--ac-border-default);
+  border-radius: var(--ac-radius-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all var(--ac-transition-fast);
+  position: relative;
+}
+
+.card:hover {
+  border-color: var(--ac-border-strong);
+  box-shadow: var(--ac-shadow-md);
+  transform: translateY(-2px);
+}
+
+.header {
+  padding: var(--ac-space-4);
+  background-color: var(--ac-bg-surface-elevated);
+  border-bottom: 1px solid var(--ac-border-subtle);
+  border-left: 3px solid var(--ac-accent-amber);
+}
+
+.topMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ac-space-2);
+}
+
+.duration {
+  font-family: var(--ac-font-mono);
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.title {
+  font-size: var(--ac-text-base);
+  font-weight: 700;
+  color: var(--ac-text-primary);
+  margin: 0;
+  line-height: var(--ac-leading-snug);
+}
+
+.body {
+  padding: var(--ac-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-3);
+  flex: 1;
+}
+
+.summary {
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-secondary);
+  line-height: var(--ac-leading-normal);
+  margin: 0;
+}
+
+.recommendationBox {
+  background-color: var(--ac-bg-surface);
+  border: 1px solid var(--ac-border-subtle);
+  border-radius: var(--ac-radius-sm);
+  padding: var(--ac-space-3);
+}
+
+.boxLabel {
+  display: block;
+  font-family: var(--ac-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ac-accent-amber);
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.boxText {
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-primary);
+  line-height: var(--ac-leading-snug);
+  margin: 0;
+}
+
+.systemsSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-2);
+}
+
+.systemsLabel {
+  font-family: var(--ac-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ac-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.systemTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ac-space-1);
+}
+
+.systemTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--ac-text-secondary);
+  background-color: var(--ac-bg-surface);
+  border: 1px solid var(--ac-border-subtle);
+  padding: 2px var(--ac-space-2);
+  border-radius: var(--ac-radius-sm);
+}
+
+.checkIcon {
+  color: var(--ac-status-success);
+}
+
+.footer {
+  margin-top: auto;
+  padding: var(--ac-space-3) var(--ac-space-4);
+  background-color: var(--ac-bg-surface);
+  border-top: 1px solid var(--ac-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.feeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.feeLabel {
+  font-size: 9px;
+  font-family: var(--ac-font-mono);
+  color: var(--ac-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.feeValue {
+  font-size: var(--ac-text-xs);
+  font-weight: 600;
+  color: var(--ac-text-primary);
+}

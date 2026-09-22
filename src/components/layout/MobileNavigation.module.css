@@ -1,0 +1,214 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--ac-bg-overlay);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn var(--ac-transition-fast);
+}
+
+.drawer {
+  background-color: var(--ac-bg-surface-elevated);
+  border-left: 1px solid var(--ac-border-strong);
+  width: 85%;
+  max-width: 360px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: slideLeft var(--ac-transition-normal);
+  position: relative;
+}
+
+.drawer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  background: repeating-linear-gradient(
+    180deg,
+    var(--ac-accent-amber),
+    var(--ac-accent-amber) 8px,
+    var(--ac-bg-surface-elevated) 8px,
+    var(--ac-bg-surface-elevated) 16px
+  );
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ac-space-4) var(--ac-space-5);
+  border-bottom: 1px solid var(--ac-border-subtle);
+  background-color: var(--ac-bg-surface);
+}
+
+.logoBlock {
+  display: flex;
+  align-items: center;
+  gap: var(--ac-space-2);
+}
+
+.emblem {
+  width: 32px;
+  height: 32px;
+  background-color: var(--ac-bg-surface-highlight);
+  border: 1px solid var(--ac-border-default);
+  border-radius: var(--ac-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emblemIcon {
+  color: var(--ac-accent-amber);
+}
+
+.brandTitle {
+  font-family: var(--ac-font-sans);
+  font-size: var(--ac-text-base);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--ac-text-primary);
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--ac-text-muted);
+  cursor: pointer;
+  padding: var(--ac-space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--ac-radius-sm);
+}
+
+.body {
+  padding: var(--ac-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-5);
+  flex: 1;
+  overflow-y: auto;
+}
+
+.menuHeading {
+  font-family: var(--ac-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ac-text-muted);
+  text-transform: uppercase;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-1);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ac-space-3);
+  font-size: var(--ac-text-sm);
+  font-weight: 600;
+  color: var(--ac-text-secondary);
+  text-decoration: none;
+  border-radius: var(--ac-radius-sm);
+  border: 1px solid transparent;
+  transition: all var(--ac-transition-fast);
+}
+
+.link:hover {
+  color: var(--ac-text-primary);
+  background-color: var(--ac-bg-surface);
+  border-color: var(--ac-border-subtle);
+}
+
+.activeLink {
+  color: var(--ac-accent-amber);
+  background-color: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.badge {
+  font-family: var(--ac-font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: #0f1115;
+  background-color: var(--ac-accent-amber);
+  padding: 1px 4px;
+  border-radius: var(--ac-radius-sm);
+}
+
+.quickLinks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-2);
+  padding-top: var(--ac-space-4);
+  border-top: 1px solid var(--ac-border-subtle);
+}
+
+.utilLinks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-1);
+}
+
+.utilLink {
+  display: flex;
+  align-items: center;
+  gap: var(--ac-space-3);
+  padding: var(--ac-space-2) var(--ac-space-3);
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-muted);
+  text-decoration: none;
+  border-radius: var(--ac-radius-sm);
+}
+
+.utilLink:hover {
+  color: var(--ac-text-primary);
+  background-color: var(--ac-bg-surface);
+}
+
+.footer {
+  padding: var(--ac-space-4) var(--ac-space-5);
+  border-top: 1px solid var(--ac-border-subtle);
+  background-color: var(--ac-bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-3);
+}
+
+.fullWidthBtn {
+  width: 100%;
+}
+
+.disclaimer {
+  font-size: 10px;
+  font-family: var(--ac-font-mono);
+  color: var(--ac-text-muted);
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}

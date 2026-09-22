@@ -1,0 +1,46 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--ac-space-12) var(--ac-space-6);
+  background-color: var(--ac-status-danger-bg);
+  border: 1px solid var(--ac-status-danger);
+  border-radius: var(--ac-radius-md);
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.iconCircle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--ac-bg-surface);
+  border: 1px solid var(--ac-status-danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--ac-space-4);
+}
+
+.icon {
+  color: var(--ac-status-danger);
+}
+
+.title {
+  font-family: var(--ac-font-mono);
+  font-size: var(--ac-text-base);
+  font-weight: 700;
+  color: var(--ac-status-danger);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--ac-space-2);
+}
+
+.message {
+  font-size: var(--ac-text-sm);
+  color: var(--ac-text-primary);
+  line-height: var(--ac-leading-normal);
+  max-width: 420px;
+  margin-bottom: var(--ac-space-6);
+}

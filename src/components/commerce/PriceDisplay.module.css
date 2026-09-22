@@ -1,0 +1,36 @@
+.container {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--ac-space-2);
+  flex-wrap: wrap;
+}
+
+.currentPrice {
+  font-family: var(--ac-font-mono);
+  font-weight: 700;
+  color: var(--ac-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.compareAtPrice {
+  font-family: var(--ac-font-mono);
+  font-size: 0.85em;
+  color: var(--ac-text-muted);
+  text-decoration: line-through;
+}
+
+.discountBadge {
+  font-family: var(--ac-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: #0f1115;
+  background-color: var(--ac-accent-amber);
+  padding: 1px 4px;
+  border-radius: var(--ac-radius-sm);
+}
+
+/* SIZES */
+.sm .currentPrice { font-size: var(--ac-text-sm); }
+.md .currentPrice { font-size: var(--ac-text-lg); }
+.lg .currentPrice { font-size: var(--ac-text-2xl); }
+.xl .currentPrice { font-size: var(--ac-text-3xl); }

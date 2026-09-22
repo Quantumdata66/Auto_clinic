@@ -1,0 +1,114 @@
+.container {
+  background: linear-gradient(135deg, var(--ac-bg-surface-elevated) 0%, var(--ac-bg-surface) 100%);
+  border: 1px solid var(--ac-border-strong);
+  border-radius: var(--ac-radius-md);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--ac-shadow-lg);
+}
+
+.container::before {
+  content: "";
+  display: block;
+  height: 4px;
+  width: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--ac-accent-amber),
+    var(--ac-accent-amber) 8px,
+    var(--ac-bg-surface-elevated) 8px,
+    var(--ac-bg-surface-elevated) 16px
+  );
+}
+
+.inner {
+  padding: var(--ac-space-8) var(--ac-space-6);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ac-space-8);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: 1.5fr 1fr;
+    padding: var(--ac-space-10) var(--ac-space-8);
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-3);
+}
+
+.badgeRow {
+  display: flex;
+}
+
+.badge {
+  font-family: var(--ac-font-mono);
+  font-size: var(--ac-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ac-accent-amber);
+  background-color: var(--ac-accent-amber-subtle);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 2px var(--ac-space-2);
+  border-radius: var(--ac-radius-sm);
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: var(--ac-text-2xl);
+  font-weight: 800;
+  line-height: var(--ac-leading-tight);
+  color: var(--ac-text-primary);
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: var(--ac-text-3xl);
+  }
+}
+
+.description {
+  font-size: var(--ac-text-sm);
+  color: var(--ac-text-secondary);
+  line-height: var(--ac-leading-normal);
+  margin: 0;
+}
+
+.noticeBox {
+  background-color: var(--ac-bg-base);
+  border: 1px solid var(--ac-border-default);
+  border-left: 3px solid var(--ac-accent-amber);
+  border-radius: var(--ac-radius-sm);
+  padding: var(--ac-space-3);
+  margin-top: var(--ac-space-2);
+}
+
+.noticeTitle {
+  font-family: var(--ac-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ac-accent-amber);
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.noticeText {
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-primary);
+  margin: 0;
+  line-height: var(--ac-leading-snug);
+}
+
+.actionStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-3);
+  width: 100%;
+}

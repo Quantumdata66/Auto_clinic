@@ -1,0 +1,194 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--ac-bg-surface);
+  border-bottom: 1px solid var(--ac-border-default);
+  box-shadow: var(--ac-shadow-md);
+}
+
+.hazardStripe {
+  height: 3px;
+  width: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--ac-accent-amber),
+    var(--ac-accent-amber) 8px,
+    var(--ac-bg-surface-elevated) 8px,
+    var(--ac-bg-surface-elevated) 16px
+  );
+}
+
+.topBar {
+  background-color: var(--ac-bg-base);
+  border-bottom: 1px solid var(--ac-border-subtle);
+  padding: 4px 0;
+  font-size: 11px;
+}
+
+.topBarInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topNotice {
+  display: flex;
+  align-items: center;
+  gap: var(--ac-space-2);
+  color: var(--ac-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.liveIndicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--ac-status-success);
+  box-shadow: 0 0 6px var(--ac-status-success);
+  flex-shrink: 0;
+}
+
+.topNoticeText {
+  font-family: var(--ac-font-mono);
+  letter-spacing: 0.02em;
+}
+
+.topUtilities {
+  display: none;
+  align-items: center;
+  gap: var(--ac-space-2);
+  font-family: var(--ac-font-mono);
+}
+
+@media (min-width: 768px) {
+  .topUtilities {
+    display: flex;
+  }
+}
+
+.topUtilLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ac-text-muted);
+  text-decoration: none;
+  transition: color var(--ac-transition-fast);
+}
+
+.topUtilLink:hover {
+  color: var(--ac-accent-amber);
+}
+
+.divider {
+  color: var(--ac-border-strong);
+}
+
+.mainNav {
+  padding: var(--ac-space-3) 0;
+}
+
+.mainNavInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ac-space-4);
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  gap: var(--ac-space-3);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoEmblem {
+  width: 38px;
+  height: 38px;
+  background-color: var(--ac-bg-surface-highlight);
+  border: 1px solid var(--ac-accent-amber);
+  border-radius: var(--ac-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.15);
+}
+
+.logoIcon {
+  color: var(--ac-accent-amber);
+}
+
+.brandTextBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandName {
+  font-family: var(--ac-font-sans);
+  font-size: var(--ac-text-lg);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--ac-text-primary);
+  line-height: 1.1;
+}
+
+.brandTagline {
+  font-family: var(--ac-font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ac-text-muted);
+}
+
+.desktopNavWrapper {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .desktopNavWrapper {
+    display: block;
+  }
+}
+
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: var(--ac-space-2);
+}
+
+.desktopWhatsAppBtn {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .desktopWhatsAppBtn {
+    display: inline-flex;
+  }
+}
+
+.mobileMenuToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--ac-border-default);
+  color: var(--ac-text-primary);
+  border-radius: var(--ac-radius-sm);
+  padding: var(--ac-space-2);
+  cursor: pointer;
+  transition: all var(--ac-transition-fast);
+}
+
+.mobileMenuToggle:hover {
+  background-color: var(--ac-bg-surface-elevated);
+  border-color: var(--ac-accent-amber);
+}
+
+@media (min-width: 1024px) {
+  .mobileMenuToggle {
+    display: none;
+  }
+}
