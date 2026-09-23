@@ -1,26 +1,30 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 import styles from "./CartTrigger.module.css";
 
 export interface CartTriggerProps {
-  itemCount?: number;
   className?: string;
 }
 
 export const CartTrigger: React.FC<CartTriggerProps> = ({
-  itemCount = 0,
   className = "",
 }) => {
+  const { itemCount, isHydrated } = useCart();
+  const displayCount = isHydrated ? itemCount : 0;
+
   return (
     <Link
       href="/cart"
       className={`${styles.trigger} ${className}`}
-      aria-label={`Shopping cart with ${itemCount} items`}
+      aria-label={`Shopping cart with ${displayCount} items`}
     >
       <div className={styles.iconWrapper}>
         <ShoppingCart size={20} className={styles.icon} />
-        {itemCount > 0 && <span className={styles.badge}>{itemCount}</span>}
+        {displayCount > 0 && <span className={styles.badge}>{displayCount}</span>}
       </div>
       <span className={styles.label}>Cart</span>
     </Link>

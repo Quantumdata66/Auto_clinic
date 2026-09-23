@@ -5,8 +5,8 @@ import { ShoppingCart, MessageCircle, Wrench, ShieldCheck, Truck, Store, CheckCi
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PriceDisplay } from "@/components/commerce/PriceDisplay";
 import { StockBadge } from "@/components/commerce/StockBadge";
+import { ProductPurchasePanel } from "@/components/commerce/ProductPurchasePanel";
 import { TechnicalSpecBlock } from "@/components/workshop/TechnicalSpecBlock";
-import { Button } from "@/components/ui/Button";
 import { getProductBySlug, getProducts } from "@/lib/services/catalogue";
 import styles from "./ProductDetail.module.css";
 
@@ -121,31 +121,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             <p className={styles.fullDescription}>{product.fullDescription}</p>
           )}
 
-          {/* Dual Action Conversion Box */}
-          <div className={styles.actionBox}>
-            <span className={styles.actionPrompt}>SELECT ORDERING CHANNEL:</span>
-            <div className={styles.actionButtons}>
-              <Button
-                variant="primary"
-                size="lg"
-                leftIcon={<ShoppingCart size={18} />}
-                disabled={product.stockStatus === "OUT_OF_STOCK"}
-                className={styles.actionBtn}
-              >
-                Add to Cart (Web Checkout)
-              </Button>
-              <Button
-                variant="whatsapp"
-                size="lg"
-                href={whatsappUrl}
-                isExternal
-                leftIcon={<MessageCircle size={18} />}
-                className={styles.actionBtn}
-              >
-                Instant Order on WhatsApp
-              </Button>
-            </div>
-          </div>
+          {/* Interactive Purchase & WhatsApp Ordering Panel */}
+          <ProductPurchasePanel product={product} />
 
           {/* Technical Specifications */}
           {product.specs && product.specs.length > 0 && (

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { CartProvider } from "@/context/CartContext";
 
 export const metadata: Metadata = {
   title: "Auto Clinic | Workshop Diagnostics & Automotive Store (Nigeria)",
@@ -17,12 +18,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          {children}
-        </div>
-        <Footer />
+        <CartProvider>
+          <Header />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            {children}
+          </div>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );
 }
+

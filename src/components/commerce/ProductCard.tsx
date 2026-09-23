@@ -1,9 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, MessageCircle, Wrench, Shield } from "lucide-react";
+import { ShoppingCart, MessageCircle, Wrench, Check } from "lucide-react";
 import { Product } from "@/types";
+import { useCart } from "@/context/CartContext";
+import { generateProductWhatsAppUrl } from "@/lib/utils/whatsapp";
 import { PriceDisplay } from "./PriceDisplay";
 import { StockBadge } from "./StockBadge";
 import { Button } from "../ui/Button";
@@ -20,15 +22,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onAddToCart,
   className = "",
 }) => {
-  // WhatsApp order text generation
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2340000000000";
-  const whatsappMessage = encodeURIComponent(
-    `Hello Auto Clinic, I would like to order/enquire about:\n` +
-    `• Product: ${product.name}\n` +
-    `• SKU: ${product.sku}\n` +
-    `• Price: ₦${(product.priceCents / 100).toLocaleString()}`
-  );
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+  const { addItem } = useCart();
+  const [isJustAdded, setIsJustAdded] = useState(false);
+
+  const whatsappUrl = generateProductWhatsAppUrl(product, 1);
+
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(product);
+    } else {
+      addItem(product, 1);
+    }
+    setIsJustAdded(true);
+    setTimeout(() => {
+      setIsJustAdded(false);
+    }, 1600);
+  };
 
   return (
     <div className={`${styles.card} ${className}`}>
@@ -87,12 +96,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <div className={styles.buttonStack}>
             <Button
               size="sm"
-              variant="primary"
-              leftIcon={<ShoppingCart size={14} />}
-              onClick={() => onAddToCart && onAddToCart(product)}
+              variant={isJustAdded ? "secondary" : "primary"}
+              leftIcon={isJustAdded ? <Check size={14} style={{ color: "var(--ac-status-success)" }} /> : <ShoppingCart size={14} />}
+              onClick={handleAddToCart}
               disabled={product.stockStatus === "OUT_OF_STOCK"}
             >
-              Add to Cart
+              {isJustAdded ? "Added to Cart" : "Add to Cart"}
             </Button>
             <Button
               size="sm"

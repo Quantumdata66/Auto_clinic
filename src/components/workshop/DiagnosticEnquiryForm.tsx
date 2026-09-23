@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { AlertTriangle, Send } from "lucide-react";
+import { AlertTriangle, Send, MessageCircle, RefreshCw } from "lucide-react";
 import { VehicleInfoFieldGroup } from "./VehicleInfoFieldGroup";
 import { Input } from "../ui/Input";
 import { Textarea } from "../ui/Textarea";
@@ -9,6 +9,9 @@ import { RadioGroup } from "../ui/Radio";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Toast } from "../ui/Toast";
+import { createDiagnosticEnquiryAction } from "@/app/actions/diagnostics";
+import { generateDiagnosticWhatsAppUrl } from "@/lib/utils/whatsapp";
+import { ContactMethod } from "@/types";
 import styles from "./DiagnosticEnquiryForm.module.css";
 
 export const DiagnosticEnquiryForm: React.FC = () => {
@@ -20,21 +23,74 @@ export const DiagnosticEnquiryForm: React.FC = () => {
   });
 
   const [symptoms, setSymptoms] = useState("");
-  const [contactMethod, setContactMethod] = useState("WHATSAPP");
+  const [contactMethod, setContactMethod] = useState<ContactMethod>("WHATSAPP");
   const [name, setName] = useState("");
   const [phoneOrWhatsapp, setPhoneOrWhatsapp] = useState("");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleVehicleChange = (field: string, value: string) => {
     setVehicle((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Generate authoritative reference code for enquiry tracking
-    const generatedRef = `AC-ENQ-${Math.floor(100000 + Math.random() * 900000)}`;
-    setSubmittedRef(generatedRef);
+    setErrorMessage(null);
+    setFieldErrors({});
+    setIsSubmitting(true);
+
+    try {
+      const result = await createDiagnosticEnquiryAction({
+        vehicleMake: vehicle.make,
+        vehicleModel: vehicle.model,
+        vehicleYear: vehicle.year,
+        vehicleRegOrVin: vehicle.regOrVin,
+        symptoms,
+        customerName: name,
+        customerPhone: phoneOrWhatsapp,
+        customerWhatsapp: phoneOrWhatsapp,
+        preferredContactMethod: contactMethod,
+      });
+
+      if (!result.success || !result.referenceCode) {
+        setErrorMessage(result.error || "Failed to submit enquiry. Please review the inputs.");
+        if (result.fieldErrors) {
+          setFieldErrors(result.fieldErrors);
+        }
+        setIsSubmitting(false);
+        return;
+      }
+
+      setSubmittedRef(result.referenceCode);
+    } catch (err) {
+      console.error("Diagnostic enquiry submission error:", err);
+      setErrorMessage("An unexpected network error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const resetForm = () => {
+    setSubmittedRef(null);
+    setVehicle({ make: "", model: "", year: "", regOrVin: "" });
+    setSymptoms("");
+    setName("");
+    setPhoneOrWhatsapp("");
+    setErrorMessage(null);
+    setFieldErrors({});
+  };
+
+  const whatsappFollowupUrl = submittedRef
+    ? generateDiagnosticWhatsAppUrl(
+        submittedRef,
+        { make: vehicle.make, model: vehicle.model, year: vehicle.year },
+        symptoms,
+        name
+      )
+    : "";
 
   return (
     <Card
@@ -47,26 +103,46 @@ export const DiagnosticEnquiryForm: React.FC = () => {
           <Toast
             type="success"
             title="DIAGNOSTIC ENQUIRY SUBMITTED"
-            message={`Reference Code: ${submittedRef}. Our workshop technician will review your vehicle symptoms and reach out via ${contactMethod} to arrange your arrival slot.`}
+            message={`Reference Code: ${submittedRef}. Our lead workshop technician will review your vehicle symptoms and reach out via ${contactMethod} to arrange your arrival slot.`}
           />
           <div className={styles.nextStepsBox}>
             <span className={styles.nextStepsTitle}>WHAT HAPPENS NEXT:</span>
             <ol className={styles.nextStepsList}>
-              <li>Technician analyzes your vehicle issue profile.</li>
-              <li>We message/call you to confirm workshop availability.</li>
-              <li>You arrive at the workshop bay for scheduled testing.</li>
+              <li>Technician analyzes your vehicle symptom profile.</li>
+              <li>We message or call you to discuss preliminary triage and workshop availability.</li>
+              <li>You bring your vehicle to the workshop bay at the agreed time for testing.</li>
             </ol>
           </div>
-          <Button
-            onClick={() => setSubmittedRef(null)}
-            variant="outline"
-            className={styles.resetBtn}
-          >
-            Submit Another Vehicle Enquiry
-          </Button>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-2)", marginTop: "var(--ac-space-4)" }}>
+            <Button
+              href={whatsappFollowupUrl}
+              isExternal
+              variant="whatsapp"
+              size="md"
+              leftIcon={<MessageCircle size={16} />}
+            >
+              Message Technician on WhatsApp ({submittedRef})
+            </Button>
+            <Button
+              onClick={resetForm}
+              variant="outline"
+              className={styles.resetBtn}
+            >
+              Submit Another Vehicle Enquiry
+            </Button>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className={styles.enquiryForm}>
+          {errorMessage && (
+            <Toast
+              type="error"
+              title="ENQUIRY VALIDATION ERROR"
+              message={errorMessage}
+            />
+          )}
+
           {/* Workflow Clarification Notice */}
           <div className={styles.workflowNotice}>
             <AlertTriangle size={16} className={styles.noticeIcon} />
@@ -93,6 +169,7 @@ export const DiagnosticEnquiryForm: React.FC = () => {
             placeholder="Describe dash warning lights (e.g. Check Engine, ABS), strange noises, rough idling, transmission slipping, or starting issues..."
             value={symptoms}
             onChange={(e) => setSymptoms(e.target.value)}
+            error={fieldErrors["symptoms"]}
             required
             rows={3}
             helperText="Please be as specific as possible regarding when the fault occurs."
@@ -105,6 +182,7 @@ export const DiagnosticEnquiryForm: React.FC = () => {
               placeholder="e.g. Adeola Johnson"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              error={fieldErrors["customerName"]}
               required
             />
             <Input
@@ -112,6 +190,7 @@ export const DiagnosticEnquiryForm: React.FC = () => {
               placeholder="e.g. 0801 234 5678"
               value={phoneOrWhatsapp}
               onChange={(e) => setPhoneOrWhatsapp(e.target.value)}
+              error={fieldErrors["customerPhone"]}
               isMonospace
               required
             />
@@ -122,7 +201,7 @@ export const DiagnosticEnquiryForm: React.FC = () => {
             name="contactMethod"
             label="Preferred Follow-up Contact Channel"
             selectedValue={contactMethod}
-            onChange={(val) => setContactMethod(val)}
+            onChange={(val) => setContactMethod(val as ContactMethod)}
             options={[
               {
                 value: "WHATSAPP",
@@ -142,10 +221,11 @@ export const DiagnosticEnquiryForm: React.FC = () => {
             type="submit"
             variant="primary"
             size="lg"
-            rightIcon={<Send size={16} />}
+            disabled={isSubmitting}
+            rightIcon={isSubmitting ? <RefreshCw size={16} className="ac-spin" /> : <Send size={16} />}
             className={styles.submitBtn}
           >
-            Submit Vehicle Enquiry
+            {isSubmitting ? "Submitting Diagnostic Enquiry..." : "Submit Vehicle Enquiry"}
           </Button>
         </form>
       )}

@@ -80,7 +80,7 @@ export const Header: React.FC = () => {
                 WhatsApp
               </Button>
 
-              <CartTrigger itemCount={0} />
+              <CartTrigger />
 
               <button
                 type="button"

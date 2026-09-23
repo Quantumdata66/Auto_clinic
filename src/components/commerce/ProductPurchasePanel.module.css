@@ -1,0 +1,116 @@
+.purchasePanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ac-space-4);
+  background-color: var(--ac-bg-panel);
+  border: 1px solid var(--ac-border-default);
+  padding: var(--ac-space-4);
+  margin-top: var(--ac-space-4);
+  margin-bottom: var(--ac-space-4);
+}
+
+.quantityRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quantityLabel {
+  font-family: var(--ac-font-mono);
+  font-size: var(--ac-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--ac-text-muted);
+}
+
+.quantityStepper {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--ac-bg-base);
+  border: 1px solid var(--ac-border-strong);
+}
+
+.stepperBtn {
+  background: transparent;
+  border: none;
+  color: var(--ac-text-primary);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--ac-transition-fast), color var(--ac-transition-fast);
+}
+
+.stepperBtn:hover:not(:disabled) {
+  background-color: var(--ac-accent-amber);
+  color: #000;
+}
+
+.stepperBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.quantityValue {
+  font-family: var(--ac-font-mono);
+  font-weight: 700;
+  font-size: var(--ac-text-sm);
+  min-width: 36px;
+  text-align: center;
+  color: var(--ac-text-primary);
+}
+
+.actionButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ac-space-3);
+}
+
+@media (max-width: 640px) {
+  .actionButtons {
+    grid-template-columns: 1fr;
+  }
+}
+
+.actionBtn {
+  width: 100%;
+}
+
+.feedbackAlert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ac-space-3);
+  padding: var(--ac-space-3);
+  background-color: rgba(76, 175, 80, 0.12);
+  border-left: 3px solid var(--ac-status-success);
+  font-size: var(--ac-text-xs);
+  color: var(--ac-text-primary);
+}
+
+.feedbackLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--ac-space-2);
+}
+
+.checkIcon {
+  color: var(--ac-status-success);
+  flex-shrink: 0;
+}
+
+.viewCartLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ac-accent-amber);
+  font-weight: 700;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.viewCartLink:hover {
+  text-decoration: underline;
+}
