@@ -24,8 +24,13 @@ import { Toast } from "@/components/ui/Toast";
 import { PriceDisplay } from "@/components/commerce/PriceDisplay";
 import { lookupOrderStatusAction } from "@/app/actions/orders";
 import { lookupDiagnosticStatusAction } from "@/app/actions/diagnostics";
-import { generateOrderConfirmationWhatsAppUrl, generateDiagnosticWhatsAppUrl } from "@/lib/utils/whatsapp";
-import { Order, DiagnosticEnquiry } from "@/types";
+import {
+  generateOrderConfirmationWhatsAppUrl,
+  generateDiagnosticWhatsAppUrl,
+  isWhatsAppConfigured,
+  getWhatsAppNotice,
+} from "@/lib/utils/whatsapp";
+import { PublicOrderTrackingView, PublicDiagnosticTrackingView } from "@/types";
 
 export default function TrackPage() {
   const [trackType, setTrackType] = useState<"ORDER" | "DIAGNOSTIC">("ORDER");
@@ -34,8 +39,8 @@ export default function TrackPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [orderResult, setOrderResult] = useState<Order | null>(null);
-  const [enquiryResult, setEnquiryResult] = useState<DiagnosticEnquiry | null>(null);
+  const [orderResult, setOrderResult] = useState<PublicOrderTrackingView | null>(null);
+  const [enquiryResult, setEnquiryResult] = useState<PublicDiagnosticTrackingView | null>(null);
 
   const handleLookup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,7 +151,7 @@ export default function TrackPage() {
           <Card
             accentBorder
             title={`ORDER STATUS: ${orderResult.orderNumber}`}
-            subtitle={`Customer: ${orderResult.customerName} • Placed on ${new Date(orderResult.createdAt).toLocaleDateString("en-NG")}`}
+            subtitle={`Customer: ${orderResult.customerNameMasked} • Placed on ${new Date(orderResult.createdAt).toLocaleDateString("en-NG")}`}
             headerAction={
               <Badge variant="amber" isMonospace size="sm">
                 STATUS: {orderResult.orderStatus}
@@ -179,9 +184,9 @@ export default function TrackPage() {
                 <div>
                   <span className="ac-mono" style={{ color: "var(--ac-text-muted)", display: "block" }}>FULFILMENT:</span>
                   <strong>{orderResult.fulfilmentType === "WORKSHOP_PICKUP" ? "Workshop Collection" : "Courier Delivery (Nigeria)"}</strong>
-                  {orderResult.shippingAddress && (
+                  {orderResult.shippingCityOrState && (
                     <span style={{ display: "block", color: "var(--ac-text-secondary)" }}>
-                      {(orderResult.shippingAddress as any).street}, {(orderResult.shippingAddress as any).city}
+                      Destination: {orderResult.shippingCityOrState}
                     </span>
                   )}
                 </div>
@@ -196,8 +201,8 @@ export default function TrackPage() {
                 <span className="ac-mono" style={{ fontSize: "10px", color: "var(--ac-text-muted)" }}>
                   ORDER ITEMS:
                 </span>
-                {(orderResult.items || []).map((item) => (
-                  <div key={item.id} style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--ac-text-xs)" }}>
+                {orderResult.items.map((item, idx) => (
+                  <div key={idx} style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--ac-text-xs)" }}>
                     <span>
                       {item.productNameSnapshot} (SKU: {item.skuSnapshot}) × {item.quantity}
                     </span>
@@ -211,25 +216,32 @@ export default function TrackPage() {
               </div>
 
               {/* WhatsApp follow-up CTA */}
-              <Button
-                href={generateOrderConfirmationWhatsAppUrl(
-                  orderResult.orderNumber,
-                  (orderResult.items || []).map((i) => ({
-                    sku: i.skuSnapshot,
-                    name: i.productNameSnapshot,
-                    quantity: i.quantity,
-                    unitPriceCents: i.unitPriceCentsSnapshot,
-                  })),
-                  orderResult.totalCents,
-                  orderResult.customerName
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-2)" }}>
+                <Button
+                  href={generateOrderConfirmationWhatsAppUrl(
+                    orderResult.orderNumber,
+                    orderResult.items.map((i) => ({
+                      sku: i.skuSnapshot,
+                      name: i.productNameSnapshot,
+                      quantity: i.quantity,
+                      unitPriceCents: i.unitPriceCentsSnapshot,
+                    })),
+                    orderResult.totalCents,
+                    orderResult.customerNameMasked
+                  )}
+                  isExternal
+                  variant="whatsapp"
+                  size="md"
+                  leftIcon={<MessageCircle size={16} />}
+                >
+                  Inquire on WhatsApp Regarding {orderResult.orderNumber}
+                </Button>
+                {!isWhatsAppConfigured() && (
+                  <span style={{ fontSize: "10px", color: "var(--ac-text-muted)", fontStyle: "italic", textAlign: "center" }}>
+                    {getWhatsAppNotice()}
+                  </span>
                 )}
-                isExternal
-                variant="whatsapp"
-                size="md"
-                leftIcon={<MessageCircle size={16} />}
-              >
-                Inquire on WhatsApp Regarding {orderResult.orderNumber}
-              </Button>
+              </div>
             </div>
           </Card>
         )}
@@ -239,7 +251,7 @@ export default function TrackPage() {
           <Card
             accentBorder
             title={`DIAGNOSTIC ENQUIRY: ${enquiryResult.referenceCode}`}
-            subtitle={`Customer: ${enquiryResult.customerName} • Vehicle: ${enquiryResult.vehicleYear} ${enquiryResult.vehicleMake} ${enquiryResult.vehicleModel}`}
+            subtitle={`Customer: ${enquiryResult.customerNameMasked} • Vehicle: ${enquiryResult.vehicleYear} ${enquiryResult.vehicleMake} ${enquiryResult.vehicleModel}`}
             headerAction={
               <Badge variant="amber" isMonospace size="sm">
                 STATUS: {enquiryResult.status.replace(/_/g, " ")}
@@ -274,24 +286,31 @@ export default function TrackPage() {
                 </div>
                 <div>
                   <span className="ac-mono" style={{ color: "var(--ac-text-muted)", display: "block" }}>PREFERRED CONTACT:</span>
-                  <strong>{enquiryResult.preferredContactMethod} ({enquiryResult.customerPhone})</strong>
+                  <strong>{enquiryResult.preferredContactMethod}</strong>
                 </div>
               </div>
 
-              <Button
-                href={generateDiagnosticWhatsAppUrl(
-                  enquiryResult.referenceCode,
-                  { make: enquiryResult.vehicleMake, model: enquiryResult.vehicleModel, year: enquiryResult.vehicleYear },
-                  enquiryResult.symptoms,
-                  enquiryResult.customerName
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-2)" }}>
+                <Button
+                  href={generateDiagnosticWhatsAppUrl(
+                    enquiryResult.referenceCode,
+                    { make: enquiryResult.vehicleMake, model: enquiryResult.vehicleModel, year: enquiryResult.vehicleYear },
+                    enquiryResult.symptoms,
+                    enquiryResult.customerNameMasked
+                  )}
+                  isExternal
+                  variant="whatsapp"
+                  size="md"
+                  leftIcon={<MessageCircle size={16} />}
+                >
+                  Chat with Technician on WhatsApp ({enquiryResult.referenceCode})
+                </Button>
+                {!isWhatsAppConfigured() && (
+                  <span style={{ fontSize: "10px", color: "var(--ac-text-muted)", fontStyle: "italic", textAlign: "center" }}>
+                    {getWhatsAppNotice()}
+                  </span>
                 )}
-                isExternal
-                variant="whatsapp"
-                size="md"
-                leftIcon={<MessageCircle size={16} />}
-              >
-                Chat with Technician on WhatsApp ({enquiryResult.referenceCode})
-              </Button>
+              </div>
             </div>
           </Card>
         )}

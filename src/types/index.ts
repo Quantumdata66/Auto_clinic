@@ -184,6 +184,7 @@ export interface OrderItemSnapshot {
 export interface Order {
   id: string;
   orderNumber: string;
+  idempotencyKey?: string;
   customerId?: string;
   customerName: string;
   customerEmail: string;
@@ -205,6 +206,44 @@ export interface Order {
   updatedAt: string;
 }
 
+/**
+ * Sanitized Public Projections for Status Tracking:
+ * Strictly strips internal UUIDs, customer emails, unmasked phone numbers,
+ * payment tokens, and staff internal notes before returning to browser clients.
+ */
+export interface PublicOrderTrackingItem {
+  skuSnapshot: string;
+  productNameSnapshot: string;
+  quantity: number;
+  unitPriceCentsSnapshot: number;
+  lineTotalCents: number;
+}
+
+export interface PublicOrderTrackingView {
+  orderNumber: string;
+  customerNameMasked: string;
+  fulfilmentType: FulfilmentType;
+  currency: CurrencyCode;
+  orderStatus: OrderStatus;
+  paymentStatus: PaymentStatus;
+  totalCents: number;
+  createdAt: string;
+  shippingCityOrState?: string;
+  items: PublicOrderTrackingItem[];
+}
+
+export interface PublicDiagnosticTrackingView {
+  referenceCode: string;
+  customerNameMasked: string;
+  vehicleMake: string;
+  vehicleModel: string;
+  vehicleYear: string;
+  symptoms: string;
+  preferredContactMethod: ContactMethod;
+  status: DiagnosticEnquiryStatus;
+  createdAt: string;
+}
+
 export interface CartItem {
   product: Product;
   quantity: number;
@@ -213,6 +252,19 @@ export interface CartItem {
 export interface BreadcrumbItem {
   label: string;
   href?: string;
+}
+
+// -----------------------------------------------------------------------------
+// Helper: Mask customer name for privacy in public tracking lookups
+// e.g. "Chinedu Okafor" -> "Chinedu O."
+// -----------------------------------------------------------------------------
+export function maskCustomerName(fullName: string): string {
+  if (!fullName || typeof fullName !== "string") return "Customer";
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0];
+  const first = parts[0];
+  const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
+  return `${first} ${lastInitial}.`;
 }
 
 // -----------------------------------------------------------------------------
@@ -233,3 +285,4 @@ export function calculateStockStatus(
   }
   return "IN_STOCK";
 }
+

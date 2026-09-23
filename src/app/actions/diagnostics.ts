@@ -5,7 +5,8 @@ import {
   DiagnosticEnquiry,
   DiagnosticEnquiryStatus,
   ContactMethod,
-  VehicleEnquiryFormValues,
+  PublicDiagnosticTrackingView,
+  maskCustomerName,
 } from "@/types";
 
 export interface CreateDiagnosticEnquiryInput {
@@ -32,7 +33,7 @@ export interface CreateDiagnosticEnquiryResult {
 
 export interface LookupDiagnosticResult {
   found: boolean;
-  enquiry?: DiagnosticEnquiry;
+  enquiry?: PublicDiagnosticTrackingView;
   error?: string;
 }
 
@@ -60,6 +61,27 @@ function isSupabaseConfigured(): boolean {
 function generateEnquiryReference(): string {
   const randomNum = Math.floor(100000 + Math.random() * 900000);
   return `AC-ENQ-${randomNum}`;
+}
+
+/**
+ * Helper to build sanitized public tracking projection.
+ * STRICT SECURITY INVARIANT:
+ * Omits internal staff_notes, internal UUIDs, and unmasked customer personal contact details.
+ */
+function toPublicDiagnosticProjection(
+  enquiry: DiagnosticEnquiry
+): PublicDiagnosticTrackingView {
+  return {
+    referenceCode: enquiry.referenceCode,
+    customerNameMasked: maskCustomerName(enquiry.customerName),
+    vehicleMake: enquiry.vehicleMake,
+    vehicleModel: enquiry.vehicleModel,
+    vehicleYear: enquiry.vehicleYear,
+    symptoms: enquiry.symptoms,
+    preferredContactMethod: enquiry.preferredContactMethod,
+    status: enquiry.status,
+    createdAt: enquiry.createdAt,
+  };
 }
 
 /**
@@ -125,7 +147,7 @@ export async function createDiagnosticEnquiryAction(
     if (isSupabaseConfigured() && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       try {
         const adminSupabase = createAdminClient();
-        const { error } = await adminSupabase.from("diagnostic_enquiries" as any).insert({
+        const { error } = await (adminSupabase as any).from("diagnostic_enquiries").insert({
           id: enquiry.id,
           reference_code: enquiry.referenceCode,
           customer_name: enquiry.customerName,
@@ -140,7 +162,7 @@ export async function createDiagnosticEnquiryAction(
           requested_service_id: enquiry.requestedServiceId || null,
           preferred_contact_method: enquiry.preferredContactMethod,
           status: enquiry.status,
-        } as any);
+        });
 
         if (error) {
           console.error("Database enquiry insertion error:", error);
@@ -168,6 +190,8 @@ export async function createDiagnosticEnquiryAction(
 
 /**
  * Server Action: Look up diagnostic enquiry status by reference code and customer contact.
+ * STRICT SECURITY INVARIANT:
+ * Omits internal staff_notes, internal UUIDs, and unmasked customer personal contact details.
  */
 export async function lookupDiagnosticStatusAction(
   referenceCode: string,
@@ -188,7 +212,7 @@ export async function lookupDiagnosticStatusAction(
       (devEnquiry.customerEmail && devEnquiry.customerEmail.toLowerCase() === cleanContact);
 
     if (contactMatches) {
-      return { found: true, enquiry: devEnquiry };
+      return { found: true, enquiry: toPublicDiagnosticProjection(devEnquiry) };
     } else {
       return {
         found: false,
@@ -203,7 +227,7 @@ export async function lookupDiagnosticStatusAction(
 
   try {
     const adminSupabase = createAdminClient();
-    const { data, error } = await adminSupabase
+    const { data, error } = await (adminSupabase as any)
       .from("diagnostic_enquiries")
       .select("*")
       .eq("reference_code", cleanRef)
@@ -225,7 +249,7 @@ export async function lookupDiagnosticStatusAction(
       };
     }
 
-    const enquiry: DiagnosticEnquiry = {
+    const reconstructedEnquiry: DiagnosticEnquiry = {
       id: row.id,
       referenceCode: row.reference_code,
       customerName: row.customer_name,
@@ -245,7 +269,7 @@ export async function lookupDiagnosticStatusAction(
       updatedAt: row.updated_at,
     };
 
-    return { found: true, enquiry };
+    return { found: true, enquiry: toPublicDiagnosticProjection(reconstructedEnquiry) };
   } catch (err) {
     console.error("Database error in lookupDiagnosticStatusAction:", err);
     return { found: false, error: "Error looking up diagnostic enquiry." };

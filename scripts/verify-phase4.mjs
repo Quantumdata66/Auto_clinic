@@ -165,7 +165,7 @@ async function runSuite() {
   // 3c. Order Status Lookup
   const lookupRes = await lookupOrderStatusAction(orderResult1.order.orderNumber, "08031234567");
   assert(lookupRes.found === true, "Order status lookup succeeds with matching order number and registered phone");
-  assert(lookupRes.order.customerName === "Chinedu Okafor", "Lookup returns correct customer name");
+  assert(lookupRes.order.customerNameMasked === "Chinedu O.", "Lookup returns sanitized masked customer name ('Chinedu O.')");
   assert(lookupRes.order.items.length === 1, "Lookup returns purchased order items snapshots");
 
   // 3d. Order Status Lookup with wrong contact (Security check)

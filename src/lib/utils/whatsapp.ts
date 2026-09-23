@@ -15,6 +15,29 @@ export const DEFAULT_WHATSAPP_NUMBER =
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2340000000000";
 
 /**
+ * Detects if a real, verified business WhatsApp number has been provided in the environment.
+ */
+export function isWhatsAppConfigured(): boolean {
+  const num = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+  return Boolean(
+    num &&
+    num !== "2340000000000" &&
+    !num.includes("placeholder") &&
+    num.replace(/[^0-9]/g, "").length >= 10
+  );
+}
+
+/**
+ * Returns a human-readable notice for placeholder WhatsApp configuration.
+ */
+export function getWhatsAppNotice(): string {
+  if (isWhatsAppConfigured()) {
+    return "Official Auto Clinic WhatsApp channel";
+  }
+  return "Configuration Placeholder: Replace NEXT_PUBLIC_WHATSAPP_NUMBER with official Auto Clinic business contact in production.";
+}
+
+/**
  * Formats lowest currency units (cents/kobo) to Nigerian Naira string (e.g. ₦48,500.00).
  */
 export function formatNaira(priceCents: number): string {
