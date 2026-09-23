@@ -38,7 +38,50 @@ export interface LookupDiagnosticResult {
 }
 
 // In-Memory Dev Store for enquiries when Supabase is running with mock/dev setup
-const DEV_ENQUIRIES_STORE = new Map<string, DiagnosticEnquiry>();
+const DEV_ENQUIRIES_STORE = new Map<string, DiagnosticEnquiry>([
+  [
+    "AC-ENQ-492011",
+    {
+      id: "e1000000-0000-0000-0000-000000000001",
+      referenceCode: "AC-ENQ-492011",
+      customerName: "Bamidele Kolawole",
+      customerEmail: "bamidele.k@example.com",
+      customerPhone: "08031234567",
+      customerWhatsapp: "08031234567",
+      vehicleMake: "Toyota",
+      vehicleModel: "Camry",
+      vehicleYear: "2017",
+      vehicleRegOrVin: "LAG-782-AB",
+      symptoms: "Check Engine light illuminated, harsh downshift from 3rd to 2nd gear when hot.",
+      preferredContactMethod: "WHATSAPP",
+      status: "PENDING_REVIEW",
+      staffNotes: "ECU scan required. Possible solenoid B pressure sensor fault.",
+      createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
+      updatedAt: new Date(Date.now() - 3600000 * 4).toISOString(),
+    },
+  ],
+  [
+    "AC-ENQ-492012",
+    {
+      id: "e1000000-0000-0000-0000-000000000002",
+      referenceCode: "AC-ENQ-492012",
+      customerName: "Emeka Nnamdi",
+      customerEmail: "emeka.n@example.com",
+      customerPhone: "08129876543",
+      customerWhatsapp: "08129876543",
+      vehicleMake: "Mercedes-Benz",
+      vehicleModel: "C300",
+      vehicleYear: "2019",
+      vehicleRegOrVin: "ABJ-319-XY",
+      symptoms: "Battery dying overnight. Keyless-Go module staying awake.",
+      preferredContactMethod: "PHONE",
+      status: "CONTACTED",
+      staffNotes: "Spoke with customer. Scheduled for parasitic drain testing at workshop bay 2.",
+      createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+      updatedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+    },
+  ],
+]);
 
 /**
  * Checks if Supabase connection is active with non-placeholder credentials.
