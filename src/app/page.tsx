@@ -96,7 +96,7 @@ export default async function HomePage() {
                   </div>
                   <div className={styles.telemetryStat}>
                     <span className={styles.statLabel}>ORDERING CHANNELS</span>
-                    <span className={styles.statValue}>Web Checkout + WhatsApp</span>
+                    <span className={styles.statValue}>Web Reservation + WhatsApp</span>
                   </div>
                   <div className={styles.telemetryStat}>
                     <span className={styles.statLabel}>FULFILMENT MODE</span>

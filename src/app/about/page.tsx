@@ -53,7 +53,7 @@ export default function AboutPage() {
             </li>
             <li style={{ display: "flex", alignItems: "flex-start", gap: "var(--ac-space-2)", fontSize: "var(--ac-text-xs)", color: "var(--ac-text-secondary)" }}>
               <CheckCircle2 size={16} style={{ color: "var(--ac-status-success)", flexShrink: 0, marginTop: "2px" }} />
-              <span><strong>Dual-Channel Accessibility:</strong> Customers can transact via traditional secure web checkout or chat directly with support on WhatsApp.</span>
+              <span><strong>Dual-Channel Accessibility:</strong> Customers can submit order reservations via web checkout or consult directly with support on WhatsApp.</span>
             </li>
             <li style={{ display: "flex", alignItems: "flex-start", gap: "var(--ac-space-2)", fontSize: "var(--ac-text-xs)", color: "var(--ac-text-secondary)" }}>
               <CheckCircle2 size={16} style={{ color: "var(--ac-status-success)", flexShrink: 0, marginTop: "2px" }} />

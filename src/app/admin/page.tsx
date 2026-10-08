@@ -68,6 +68,20 @@ export default function AdminDashboardPage() {
     }
   }, []);
 
+  const loadDashboardData = async (token: string) => {
+    setDataLoading(true);
+    try {
+      const res = await getStaffDashboardDataAction(token);
+      if (res.success && res.data) {
+        setDashboardData(res.data);
+      }
+    } catch (err) {
+      console.error("Error loading dashboard data:", err);
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (session) {
       loadDashboardData(session.token);
@@ -98,20 +112,6 @@ export default function AdminDashboardPage() {
     setSession(null);
     sessionStorage.removeItem("ac_staff_session");
     setDashboardData(null);
-  };
-
-  const loadDashboardData = async (token: string) => {
-    setDataLoading(true);
-    try {
-      const res = await getStaffDashboardDataAction(token);
-      if (res.success && res.data) {
-        setDashboardData(res.data);
-      }
-    } catch (err) {
-      console.error("Error loading dashboard data:", err);
-    } finally {
-      setDataLoading(false);
-    }
   };
 
   const handleSaveEnquiry = async (enquiryId: string, currentStatus: DiagnosticEnquiryStatus, currentNotes?: string) => {

@@ -9,13 +9,14 @@ import { CartTrigger } from "../commerce/CartTrigger";
 import { Button } from "../ui/Button";
 import styles from "./Header.module.css";
 
+import { buildWhatsAppUrl } from "@/lib/utils/whatsapp";
+
 export const Header: React.FC = () => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2340000000000";
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+  const whatsappUrl = buildWhatsAppUrl(
     "Hello Auto Clinic, I would like to enquire about workshop diagnostics & automotive tools."
-  )}`;
+  );
 
   return (
     <header className={styles.header}>

@@ -20,9 +20,9 @@ export default async function DiagnosticsPage() {
         <div className={styles.servicesColumn}>
           <div className={styles.sectionHeader}>
             <span className="ac-eyebrow">DIAGNOSTIC PROTOCOLS</span>
-            <h2 className={styles.columnTitle}>WORKSHOP DIAGNOSTIC CAPABILITIES</h2>
+            <h2 className={styles.columnTitle}>PRELIMINARY DIAGNOSTIC PROTOCOLS</h2>
             <p className={styles.columnDesc}>
-              Select a service profile below to review scope, or complete the enquiry form to have our technicians analyze your specific symptoms.
+              Review preliminary diagnostic scopes below. In accordance with workshop operational policy, all in-person sessions require prior enquiry submission and direct triage consultation. Submission does not imply automatic booking; our team will contact you to arrange a suitable appointment.
             </p>
           </div>
 

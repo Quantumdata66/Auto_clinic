@@ -8,6 +8,8 @@ import { NAV_ITEMS } from "./Navigation";
 import { Button } from "../ui/Button";
 import styles from "./MobileNavigation.module.css";
 
+import { buildWhatsAppUrl } from "@/lib/utils/whatsapp";
+
 export interface MobileNavigationProps {
   isOpen: boolean;
   onClose: () => void;
@@ -34,10 +36,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ isOpen, onCl
 
   if (!isOpen) return null;
 
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2340000000000";
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    "Hello Auto Clinic, I have an automotive enquiry."
-  )}`;
+  const whatsappUrl = buildWhatsAppUrl("Hello Auto Clinic, I have an automotive enquiry.");
 
   return (
     <div className={styles.overlay} onClick={onClose} role="presentation">

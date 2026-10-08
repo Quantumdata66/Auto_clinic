@@ -59,9 +59,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             <div className={styles.filterDivider} />
 
             <div className={styles.filterSection}>
-              <span className={styles.filterSubheading}>ORDERING CHANNELS</span>
+              <span className={styles.filterSubheading}>STAGING ORDERING &amp; RESERVATIONS</span>
               <p className={styles.channelText}>
-                All listed equipment supports direct online payment and WhatsApp instant ordering.
+                All listed equipment supports web order reservation and WhatsApp assistance. Direct payment processing is disabled during staging review; orders are registered as unpaid reservations.
               </p>
             </div>
           </div>

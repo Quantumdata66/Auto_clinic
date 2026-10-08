@@ -31,15 +31,6 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     return notFound();
   }
 
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2340000000000";
-  const whatsappMessage = encodeURIComponent(
-    `Hello Auto Clinic, I would like to order this item:\n` +
-    `• Product: ${product.name}\n` +
-    `• SKU: ${product.sku}\n` +
-    `• Price: ₦${(product.priceCents / 100).toLocaleString()}`
-  );
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
-
   return (
     <PageContainer
       breadcrumbs={[

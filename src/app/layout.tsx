@@ -4,6 +4,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
 
+import { StagingBanner } from "@/components/layout/StagingBanner";
+
 export const metadata: Metadata = {
   title: "Auto Clinic | Workshop Diagnostics & Automotive Store (Nigeria)",
   description:
@@ -19,6 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <CartProvider>
+          <StagingBanner />
           <Header />
           <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
             {children}

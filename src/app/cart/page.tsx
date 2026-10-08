@@ -43,12 +43,40 @@ export default function CartPage() {
         breadcrumbs={[{ label: "Shopping Cart" }]}
         maxWidth="wide"
       >
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "240px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--ac-space-3)", color: "var(--ac-text-muted)" }}>
-            <RefreshCw size={20} className="ac-spin" />
-            <span className="ac-mono" style={{ fontSize: "var(--ac-text-sm)" }}>
-              HYDRATING WORKSHOP CART...
-            </span>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "var(--ac-space-12) var(--ac-space-4)",
+            textAlign: "center",
+            backgroundColor: "var(--ac-bg-panel)",
+            border: "1px dashed var(--ac-border-default)",
+            gap: "var(--ac-space-4)",
+          }}
+        >
+          <div
+            style={{
+              width: "48px",
+              height: "48px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "var(--ac-bg-base)",
+              border: "1px solid var(--ac-border-default)",
+              color: "var(--ac-accent-amber)",
+            }}
+          >
+            <ShoppingCart size={24} />
+          </div>
+          <div>
+            <h2 style={{ fontSize: "var(--ac-text-base)", fontWeight: 700, margin: "0 0 var(--ac-space-1) 0" }}>
+              LOADING WORKSHOP CART...
+            </h2>
+            <p style={{ fontSize: "var(--ac-text-xs)", color: "var(--ac-text-secondary)", margin: 0 }}>
+              Retrieving your active equipment selections.
+            </p>
           </div>
         </div>
       </PageContainer>

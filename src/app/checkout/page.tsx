@@ -461,7 +461,7 @@ export default function CheckoutPage() {
               </Card>
 
               {/* Payment Method Selector */}
-              <Card title="3. PAYMENT CHANNEL" subtitle="Unresolved provider placeholder">
+              <Card title="3. PAYMENT CHANNEL" subtitle="Staging Demonstration Mode">
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-3)" }}>
                   <RadioGroup
                     name="payment"
@@ -470,19 +470,19 @@ export default function CheckoutPage() {
                     options={[
                       {
                         value: "ONLINE_GATEWAY",
-                        label: "Card / Bank Transfer (Online Payment)",
-                        description: "Standard secure electronic checkout via approved Nigerian payment gateway.",
+                        label: "Direct Bank Transfer / Official Invoice (Staging Reservation)",
+                        description: "Submit order reservation. Live payment gateway integration is pending approval. You will receive an invoice with official Nigerian bank transfer instructions.",
                       },
                       {
                         value: "WHATSAPP_CONFIRM",
-                        label: "WhatsApp Order & Bank Transfer Invoice",
-                        description: "Submit order and finalize bank payment / direct invoice with staff over WhatsApp.",
+                        label: "WhatsApp Order Confirmation & Manual Invoice",
+                        description: "Submit order reservation and arrange manual bank transfer or workshop collection over WhatsApp.",
                       },
                     ]}
                   />
                   <div style={{ display: "flex", alignItems: "center", gap: "var(--ac-space-2)", fontSize: "11px", color: "var(--ac-text-muted)", marginTop: "var(--ac-space-2)" }}>
                     <AlertCircle size={14} style={{ color: "var(--ac-accent-amber)", flexShrink: 0 }} />
-                    <span>Payment provider selection is deliberately open; gateway integration will occur in a later phase. All orders are marked UNPAID upon placement.</span>
+                    <span>Live payment gateway is disabled in this staging review. All orders are registered with UNPAID status. Zero online card charges will be incurred.</span>
                   </div>
                 </div>
               </Card>

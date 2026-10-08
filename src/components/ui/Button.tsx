@@ -1,3 +1,5 @@
+"use client";
+
 import React, { forwardRef } from "react";
 import Link from "next/link";
 import styles from "./Button.module.css";
@@ -51,6 +53,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       </>
     );
 
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+      if (variant === "whatsapp" && !href && !props.onClick) {
+        e.preventDefault();
+        alert(
+          "Auto Clinic Staging Notice:\nThe official Auto Clinic WhatsApp business channel is pending configuration. Direct messaging will be enabled once verified business line credentials are connected. Please use the website forms to place reservations or submit diagnostic enquiries."
+        );
+        return;
+      }
+      if (props.onClick) {
+        props.onClick(e as any);
+      }
+    };
+
     if (href) {
       if (isExternal) {
         return (
@@ -59,13 +74,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             target="_blank"
             rel="noopener noreferrer"
             className={classNames}
+            onClick={handleClick}
           >
             {content}
           </a>
         );
       }
       return (
-        <Link href={href} className={classNames}>
+        <Link href={href} className={classNames} onClick={handleClick}>
           {content}
         </Link>
       );
@@ -78,6 +94,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={classNames}
         disabled={disabled || isLoading}
         aria-busy={isLoading}
+        onClick={handleClick}
         {...props}
       >
         {content}

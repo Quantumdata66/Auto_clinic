@@ -61,15 +61,15 @@ export const Footer: React.FC = () => {
             <ul className={styles.infoList}>
               <li className={styles.infoItem}>
                 <MapPin size={14} className={styles.infoIcon} />
-                <span>Physical Workshop: Location in Nigeria (Specific address to be confirmed)</span>
+                <span>Workshop Establishment: Nigeria (Location under review; walk-ins not accepted)</span>
               </li>
               <li className={styles.infoItem}>
                 <Clock size={14} className={styles.infoIcon} />
-                <span>Workshop Hours: Schedule to be confirmed</span>
+                <span>Operating Schedule: By confirmed appointment triage only</span>
               </li>
               <li className={styles.infoItem}>
                 <MessageCircle size={14} className={styles.infoIcon} />
-                <span>WhatsApp: Ordering &amp; Enquiry Available</span>
+                <span>WhatsApp Channel: Line configuration pending for staging</span>
               </li>
               <li className={styles.infoItem}>
                 <Link href="/track" className={styles.trackLink}>

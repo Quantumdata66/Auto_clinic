@@ -6,9 +6,10 @@ import { CartItemState } from "@/context/CartContext";
  * Generates formatted, URL-encoded WhatsApp messages for carts, individual items,
  * and diagnostic enquiries.
  *
- * NOTE: The business WhatsApp number uses a clearly designated configuration placeholder
- * (NEXT_PUBLIC_WHATSAPP_NUMBER or default "2340000000000") until verified business
- * contact details are formally supplied.
+ * SAFETY INVARIANT:
+ * Uses NEXT_PUBLIC_WHATSAPP_NUMBER if configured. If the environment contains the default
+ * placeholder "2340000000000" or is unconfigured, isWhatsAppConfigured() evaluates to FALSE,
+ * preventing any external navigation to a placeholder number.
  */
 
 export const DEFAULT_WHATSAPP_NUMBER =
@@ -28,13 +29,13 @@ export function isWhatsAppConfigured(): boolean {
 }
 
 /**
- * Returns a human-readable notice for placeholder WhatsApp configuration.
+ * Returns a human-readable notice for WhatsApp configuration state.
  */
 export function getWhatsAppNotice(): string {
   if (isWhatsAppConfigured()) {
-    return "Official Auto Clinic WhatsApp channel";
+    return "Official Auto Clinic WhatsApp business channel active.";
   }
-  return "Configuration Placeholder: Replace NEXT_PUBLIC_WHATSAPP_NUMBER with official Auto Clinic business contact in production.";
+  return "Notice: Auto Clinic official WhatsApp business channel is pending configuration for staging. Direct messaging will be active once official line credentials are connected.";
 }
 
 /**
@@ -50,11 +51,15 @@ export function formatNaira(priceCents: number): string {
 
 /**
  * Constructs a wa.me URL with phone number and encoded message.
+ * If not configured, returns undefined so UI triggers fallback modal/alert rather than navigating.
  */
 export function buildWhatsAppUrl(
   message: string,
   phoneNumber: string = DEFAULT_WHATSAPP_NUMBER
-): string {
+): string | undefined {
+  if (!isWhatsAppConfigured() && (phoneNumber === "2340000000000" || phoneNumber === DEFAULT_WHATSAPP_NUMBER)) {
+    return undefined;
+  }
   const cleanNumber = phoneNumber.replace(/[^0-9]/g, "");
   return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
 }
@@ -67,7 +72,7 @@ export function generateCartWhatsAppUrl(
   subtotalCents: number,
   fulfilmentType: string = "DELIVERY",
   customerNotes?: string
-): string {
+): string | undefined {
   if (!items || items.length === 0) {
     const emptyMsg =
       `*AUTO CLINIC — STORE ENQUIRY*\n\n` +
@@ -107,7 +112,7 @@ export function generateCartWhatsAppUrl(
   }
 
   msg +=
-    `_Note: Order submitted via Auto Clinic web store. Please confirm equipment availability, delivery quote, and bank invoice details._`;
+    `_Note: Order enquiry submitted via Auto Clinic web store. Staging demonstration order._`;
 
   return buildWhatsAppUrl(msg);
 }
@@ -118,7 +123,7 @@ export function generateCartWhatsAppUrl(
 export function generateProductWhatsAppUrl(
   product: Product,
   quantity: number = 1
-): string {
+): string | undefined {
   const lineTotal = product.priceCents * quantity;
   const msg =
     `*AUTO CLINIC — PRODUCT ENQUIRY & ORDER*\n` +
@@ -143,7 +148,7 @@ export function generateOrderConfirmationWhatsAppUrl(
   items: { sku: string; name: string; quantity: number; unitPriceCents: number }[],
   totalCents: number,
   customerName: string
-): string {
+): string | undefined {
   const itemsSummary = items
     .map((i) => `• ${i.name} (SKU: ${i.sku}) × ${i.quantity}`)
     .join("\n");
@@ -154,7 +159,7 @@ export function generateOrderConfirmationWhatsAppUrl(
     `*Order Reference:* ${orderNumber}\n` +
     `*Customer Name:* ${customerName}\n` +
     `*Total (NGN):* ${formatNaira(totalCents)}\n` +
-    `*Payment Status:* UNPAID (Awaiting bank transfer / invoice)\n\n` +
+    `*Payment Status:* UNPAID (Awaiting bank transfer invoice / confirmation)\n\n` +
     `*Items:*\n${itemsSummary}\n\n` +
     `Hello Auto Clinic team, I have placed web order ${orderNumber}. Please provide payment/transfer details and delivery arrangements.`;
 
@@ -169,7 +174,7 @@ export function generateDiagnosticWhatsAppUrl(
   vehicle: { make: string; model: string; year: string },
   symptoms: string,
   customerName: string
-): string {
+): string | undefined {
   const msg =
     `*AUTO CLINIC — WORKSHOP DIAGNOSTIC ENQUIRY*\n` +
     `========================================\n\n` +
