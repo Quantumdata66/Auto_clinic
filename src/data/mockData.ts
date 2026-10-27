@@ -1,4 +1,4 @@
-import { Category, Product, DiagnosticService } from "@/types";
+import type { Category, Product, DiagnosticService } from "@/types";
 
 /**
  * AUTO CLINIC — STAGING DEMONSTRATION CATALOGUE
@@ -52,7 +52,7 @@ export const MOCK_CATEGORIES: Category[] = [
 
 export const MOCK_PRODUCTS: Product[] = [
   {
-    id: "p1000000-0000-0000-0000-000000000001",
+    id: "a1000000-0000-0000-0000-000000000001",
     sku: "AC-DEV-OBD802",
     name: "Auto Clinic Pro-Scan V2 OBD2 Scanner",
     slug: "pro-scan-v2-obd2-scanner",
@@ -78,7 +78,7 @@ export const MOCK_PRODUCTS: Product[] = [
     compatibility: ["Universal OBD2 (Petrol 1996+, Diesel 2004+)", "Toyota", "Honda", "Mercedes-Benz", "BMW", "Ford", "Hyundai", "Kia"],
   },
   {
-    id: "p1000000-0000-0000-0000-000000000002",
+    id: "a1000000-0000-0000-0000-000000000002",
     sku: "AC-DEV-BAT1224",
     name: "Heavy-Duty 12V/24V Digital Battery Analyzer",
     slug: "heavy-duty-battery-analyzer",
@@ -102,7 +102,7 @@ export const MOCK_PRODUCTS: Product[] = [
     compatibility: ["Lead-Acid", "AGM Flat/Spiral", "GEL", "EFB 12V/24V Systems"],
   },
   {
-    id: "p1000000-0000-0000-0000-000000000003",
+    id: "a1000000-0000-0000-0000-000000000003",
     sku: "AC-DEV-INF150P",
     name: "Industrial 150 PSI Dual-Cylinder Tyre Inflator",
     slug: "industrial-dual-cylinder-tyre-inflator",
@@ -127,7 +127,7 @@ export const MOCK_PRODUCTS: Product[] = [
     compatibility: ["Sedans", "SUVs", "Light Commercial Trucks", "4x4 Vehicles"],
   },
   {
-    id: "p1000000-0000-0000-0000-000000000004",
+    id: "a1000000-0000-0000-0000-000000000004",
     sku: "AC-DEV-TORQ12",
     name: "1/2-Inch Drive Precision Click Torque Wrench",
     slug: "precision-click-torque-wrench",
@@ -151,7 +151,7 @@ export const MOCK_PRODUCTS: Product[] = [
     compatibility: ["Wheel Nuts", "Cylinder Head Bolts", "Suspension & Brake Assemblies"],
   },
   {
-    id: "p1000000-0000-0000-0000-000000000005",
+    id: "a1000000-0000-0000-0000-000000000005",
     sku: "AC-DEV-JMP2000",
     name: "2000A Peak Lithium Emergency Jump Starter",
     slug: "lithium-emergency-jump-starter",
@@ -175,7 +175,7 @@ export const MOCK_PRODUCTS: Product[] = [
     compatibility: ["Up to 8.0L Petrol", "Up to 6.0L Diesel Engines"],
   },
   {
-    id: "p1000000-0000-0000-0000-000000000006",
+    id: "a1000000-0000-0000-0000-000000000006",
     sku: "AC-DEV-BOR1080",
     name: "Dual-Lens HD Articulating Borescope Camera",
     slug: "dual-lens-borescope-camera",
@@ -202,7 +202,7 @@ export const MOCK_PRODUCTS: Product[] = [
 
 export const MOCK_DIAGNOSTIC_SERVICES: DiagnosticService[] = [
   {
-    id: "s1000000-0000-0000-0000-000000000001",
+    id: "d1000000-0000-0000-0000-000000000001",
     code: "DIAG-ECU-01",
     name: "Full ECU Scan & Diagnostic Fault Analysis",
     slug: "ecu-fault-code-scan",
@@ -215,7 +215,7 @@ export const MOCK_DIAGNOSTIC_SERVICES: DiagnosticService[] = [
     displayOrder: 1,
   },
   {
-    id: "s1000000-0000-0000-0000-000000000002",
+    id: "d1000000-0000-0000-0000-000000000002",
     code: "DIAG-ELEC-02",
     name: "Electrical System & Parasitic Drain Triage",
     slug: "electrical-system-triage",
@@ -228,7 +228,7 @@ export const MOCK_DIAGNOSTIC_SERVICES: DiagnosticService[] = [
     displayOrder: 2,
   },
   {
-    id: "s1000000-0000-0000-0000-000000000003",
+    id: "d1000000-0000-0000-0000-000000000003",
     code: "DIAG-MECH-03",
     name: "Engine Mechanical Health & Compression Triage",
     slug: "engine-mechanical-triage",
@@ -241,7 +241,7 @@ export const MOCK_DIAGNOSTIC_SERVICES: DiagnosticService[] = [
     displayOrder: 3,
   },
   {
-    id: "s1000000-0000-0000-0000-000000000004",
+    id: "d1000000-0000-0000-0000-000000000004",
     code: "DIAG-PRE-04",
     name: "Pre-Purchase Comprehensive Vehicle Inspection",
     slug: "pre-purchase-inspection",

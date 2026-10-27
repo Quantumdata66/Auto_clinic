@@ -97,7 +97,7 @@ async function runSuite() {
 
   // 2b. Valid item validation and authoritative pricing
   const validRes = await validateOrderItemsAndPricing([
-    { productId: "p1000000-0000-0000-0000-000000000001", quantity: 2 },
+    { productId: "a1000000-0000-0000-0000-000000000001", quantity: 2 },
   ]);
   assert(validRes.isValid === true, "Valid product ID and quantity pass server validation");
   assert(validRes.data.subtotalCents === 9700000, "Server authoritatively calculates subtotal: 2 × ₦48,500 = ₦97,000 (9700000 cents)");
@@ -112,13 +112,13 @@ async function runSuite() {
 
   // 2d. Invalid quantity rejection (0 or negative)
   const zeroQtyRes = await validateOrderItemsAndPricing([
-    { productId: "p1000000-0000-0000-0000-000000000001", quantity: 0 },
+    { productId: "a1000000-0000-0000-0000-000000000001", quantity: 0 },
   ]);
   assert(zeroQtyRes.isValid === false, "Zero quantity is rejected by server validation");
 
   // 2e. Insufficient stock rejection
   const excessiveQtyRes = await validateOrderItemsAndPricing([
-    { productId: "p1000000-0000-0000-0000-000000000003", quantity: 999 }, // has stockQuantity: 3, allowBackorder: false
+    { productId: "a1000000-0000-0000-0000-000000000003", quantity: 999 }, // has stockQuantity: 3, allowBackorder: false
   ]);
   assert(excessiveQtyRes.isValid === false, "Excessive quantity beyond available stock without backorder is rejected");
 
@@ -131,7 +131,7 @@ async function runSuite() {
   const testIdempotencyKey = "test-idem-key-" + Date.now();
   const orderInput = {
     idempotencyKey: testIdempotencyKey,
-    items: [{ productId: "p1000000-0000-0000-0000-000000000001", quantity: 1 }],
+    items: [{ productId: "a1000000-0000-0000-0000-000000000001", quantity: 1 }],
     customer: {
       firstName: "Chinedu",
       lastName: "Okafor",

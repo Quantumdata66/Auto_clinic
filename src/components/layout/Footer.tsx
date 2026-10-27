@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Wrench, Shield, MessageCircle, MapPin, Clock, Phone, AlertCircle } from "lucide-react";
+import { Wrench, MessageCircle, MapPin, Clock, AlertCircle } from "lucide-react";
 import styles from "./Footer.module.css";
 
 export const Footer: React.FC = () => {
@@ -88,7 +88,7 @@ export const Footer: React.FC = () => {
           <div className={styles.bottomLinks}>
             <Link href="/about" className={styles.bottomLink}>About Clinic</Link>
             <Link href="/contact" className={styles.bottomLink}>Contact &amp; Workshop</Link>
-            <Link href="/admin" className={styles.bottomLink}>Staff Portal</Link>
+            <Link href="/admin" className={styles.bottomLink}>Business Admin</Link>
           </div>
         </div>
       </div>

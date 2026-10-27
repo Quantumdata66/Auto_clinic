@@ -13,6 +13,18 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Targeted accommodation for untyped Supabase query builder queries and RPC payloads
+  {
+    files: [
+      "src/app/actions/**/*.ts",
+      "src/lib/services/**/*.ts",
+      "src/app/admin/page.tsx",
+      "src/app/checkout/page.tsx",
+    ],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

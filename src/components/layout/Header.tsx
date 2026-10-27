@@ -2,21 +2,19 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Wrench, Menu, MessageCircle, User, Shield } from "lucide-react";
+import { Wrench, Menu, MessageCircle, Search, Shield } from "lucide-react";
 import { Navigation } from "./Navigation";
 import { MobileNavigation } from "./MobileNavigation";
 import { CartTrigger } from "../commerce/CartTrigger";
 import { Button } from "../ui/Button";
 import styles from "./Header.module.css";
 
-import { buildWhatsAppUrl } from "@/lib/utils/whatsapp";
+import { generateGeneralEnquiryWhatsAppUrl } from "@/lib/utils/whatsapp";
 
 export const Header: React.FC = () => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
-  const whatsappUrl = buildWhatsAppUrl(
-    "Hello Auto Clinic, I would like to enquire about workshop diagnostics & automotive tools."
-  );
+  const whatsappUrl = generateGeneralEnquiryWhatsAppUrl();
 
   return (
     <header className={styles.header}>
@@ -34,14 +32,14 @@ export const Header: React.FC = () => {
               </span>
             </div>
             <div className={styles.topUtilities}>
-              <Link href="/account" className={styles.topUtilLink}>
-                <User size={12} />
-                <span>Customer Portal</span>
+              <Link href="/track" className={styles.topUtilLink}>
+                <Search size={12} />
+                <span>Track Status</span>
               </Link>
               <span className={styles.divider} aria-hidden="true">|</span>
               <Link href="/admin" className={styles.topUtilLink}>
                 <Shield size={12} />
-                <span>Staff Access</span>
+                <span>Business Admin</span>
               </Link>
             </div>
           </div>
@@ -72,11 +70,12 @@ export const Header: React.FC = () => {
             <div className={styles.rightActions}>
               <Button
                 href={whatsappUrl}
-                isExternal
+                isExternal={Boolean(whatsappUrl)}
                 variant="whatsapp"
                 size="sm"
                 leftIcon={<MessageCircle size={14} />}
                 className={styles.desktopWhatsAppBtn}
+                aria-label="Contact Auto Clinic on WhatsApp"
               >
                 WhatsApp
               </Button>

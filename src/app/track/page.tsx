@@ -1,16 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import {
   Search,
-  Package,
-  Wrench,
-  CheckCircle2,
-  Clock,
-  Truck,
-  Store,
-  AlertCircle,
   RefreshCw,
   MessageCircle,
 } from "lucide-react";
@@ -27,6 +19,7 @@ import { lookupDiagnosticStatusAction } from "@/app/actions/diagnostics";
 import {
   generateOrderConfirmationWhatsAppUrl,
   generateDiagnosticWhatsAppUrl,
+  generateGeneralEnquiryWhatsAppUrl,
   isWhatsAppConfigured,
   getWhatsAppNotice,
 } from "@/lib/utils/whatsapp";
@@ -217,8 +210,8 @@ export default function TrackPage() {
 
               {/* WhatsApp follow-up CTA */}
               <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-2)" }}>
-                <Button
-                  href={generateOrderConfirmationWhatsAppUrl(
+                {(() => {
+                  const orderWhatsAppUrl = generateOrderConfirmationWhatsAppUrl(
                     orderResult.orderNumber,
                     orderResult.items.map((i) => ({
                       sku: i.skuSnapshot,
@@ -228,14 +221,20 @@ export default function TrackPage() {
                     })),
                     orderResult.totalCents,
                     orderResult.customerNameMasked
-                  )}
-                  isExternal
-                  variant="whatsapp"
-                  size="md"
-                  leftIcon={<MessageCircle size={16} />}
-                >
-                  Inquire on WhatsApp Regarding {orderResult.orderNumber}
-                </Button>
+                  );
+                  return (
+                    <Button
+                      href={orderWhatsAppUrl}
+                      isExternal={Boolean(orderWhatsAppUrl)}
+                      variant="whatsapp"
+                      size="md"
+                      leftIcon={<MessageCircle size={16} />}
+                      aria-label={`Inquire on WhatsApp regarding order ${orderResult.orderNumber}`}
+                    >
+                      Inquire on WhatsApp Regarding {orderResult.orderNumber}
+                    </Button>
+                  );
+                })()}
                 {!isWhatsAppConfigured() && (
                   <span style={{ fontSize: "10px", color: "var(--ac-text-muted)", fontStyle: "italic", textAlign: "center" }}>
                     {getWhatsAppNotice()}
@@ -247,73 +246,96 @@ export default function TrackPage() {
         )}
 
         {/* Diagnostic Enquiry Result Display */}
-        {enquiryResult && (
-          <Card
-            accentBorder
-            title={`DIAGNOSTIC ENQUIRY: ${enquiryResult.referenceCode}`}
-            subtitle={`Customer: ${enquiryResult.customerNameMasked} • Vehicle: ${enquiryResult.vehicleYear} ${enquiryResult.vehicleMake} ${enquiryResult.vehicleModel}`}
-            headerAction={
-              <Badge variant="amber" isMonospace size="sm">
-                STATUS: {enquiryResult.status.replace(/_/g, " ")}
-              </Badge>
-            }
-          >
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-4)" }}>
-              <div className="ac-panel" style={{ backgroundColor: "var(--ac-bg-base)", padding: "var(--ac-space-3)" }}>
-                <span className="ac-mono" style={{ fontSize: "11px", color: "var(--ac-accent-amber)", display: "block", marginBottom: "4px" }}>
-                  TRIAGE PROGRESS:
-                </span>
-                <p style={{ fontSize: "var(--ac-text-sm)", color: "var(--ac-text-primary)", margin: 0 }}>
-                  {enquiryResult.status === "PENDING_REVIEW" &&
-                    "Enquiry logged in queue. Our lead diagnostic technician is reviewing the reported vehicle symptoms prior to contacting you."}
-                  {enquiryResult.status === "CONTACTED" &&
-                    "Technician has initiated contact via your preferred channel to discuss preliminary fault diagnosis and slot availability."}
-                  {enquiryResult.status === "APPOINTMENT_SCHEDULED" &&
-                    "Workshop appointment slot agreed. Please arrive at the workshop bay at the scheduled time."}
-                  {enquiryResult.status === "COMPLETED" &&
-                    "Workshop vehicle diagnostic assessment completed."}
-                  {enquiryResult.status === "CANCELLED" &&
-                    "Diagnostic enquiry has been cancelled."}
-                </p>
-              </div>
+        {enquiryResult && (() => {
+          const isGeneralEnquiry = enquiryResult.vehicleYear === "N/A";
+          const subjectOrVehicle = isGeneralEnquiry
+            ? `Subject: ${enquiryResult.vehicleModel}`
+            : `Vehicle: ${enquiryResult.vehicleYear} ${enquiryResult.vehicleMake} ${enquiryResult.vehicleModel}`;
 
-              <div style={{ fontSize: "var(--ac-text-xs)", display: "flex", flexDirection: "column", gap: "var(--ac-space-2)" }}>
-                <div>
-                  <span className="ac-mono" style={{ color: "var(--ac-text-muted)", display: "block" }}>REPORTED SYMPTOMS:</span>
-                  <p style={{ color: "var(--ac-text-primary)", margin: "2px 0 0 0", fontStyle: "italic" }}>
-                    &ldquo;{enquiryResult.symptoms}&rdquo;
+          return (
+            <Card
+              accentBorder
+              title={`ENQUIRY / DIAGNOSTIC: ${enquiryResult.referenceCode}`}
+              subtitle={`Customer: ${enquiryResult.customerNameMasked} • ${subjectOrVehicle}`}
+              headerAction={
+                <Badge variant="amber" isMonospace size="sm">
+                  STATUS: {enquiryResult.status.replace(/_/g, " ")}
+                </Badge>
+              }
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-4)" }}>
+                <div className="ac-panel" style={{ backgroundColor: "var(--ac-bg-base)", padding: "var(--ac-space-3)" }}>
+                  <span className="ac-mono" style={{ fontSize: "11px", color: "var(--ac-accent-amber)", display: "block", marginBottom: "4px" }}>
+                    TRIAGE &amp; OPERATIONAL STAGE:
+                  </span>
+                  <p style={{ fontSize: "var(--ac-text-sm)", color: "var(--ac-text-primary)", margin: 0 }}>
+                    {enquiryResult.status === "PENDING_REVIEW" &&
+                      (isGeneralEnquiry
+                        ? "Enquiry logged in queue. Auto Clinic is reviewing your enquiry details prior to contacting you."
+                        : "Enquiry logged in queue. Auto Clinic is reviewing the reported vehicle symptoms prior to contacting you.")}
+                    {enquiryResult.status === "CONTACTED" &&
+                      "Auto Clinic has initiated contact via your preferred channel to discuss preliminary fault diagnosis or enquiry details."}
+                    {enquiryResult.status === "APPOINTMENT_SCHEDULED" &&
+                      "Workshop appointment slot agreed. Please arrive at the workshop bay at the scheduled time."}
+                    {enquiryResult.status === "COMPLETED" &&
+                      "Diagnostic assessment / enquiry successfully completed."}
+                    {enquiryResult.status === "CANCELLED" &&
+                      "Enquiry has been cancelled."}
                   </p>
                 </div>
-                <div>
-                  <span className="ac-mono" style={{ color: "var(--ac-text-muted)", display: "block" }}>PREFERRED CONTACT:</span>
-                  <strong>{enquiryResult.preferredContactMethod}</strong>
+
+                <div style={{ fontSize: "var(--ac-text-xs)", display: "flex", flexDirection: "column", gap: "var(--ac-space-2)" }}>
+                  <div>
+                    <span className="ac-mono" style={{ color: "var(--ac-text-muted)", display: "block" }}>
+                      {isGeneralEnquiry ? "ENQUIRY DETAILS / MESSAGE:" : "REPORTED SYMPTOMS:"}
+                    </span>
+                    <p style={{ color: "var(--ac-text-primary)", margin: "2px 0 0 0", fontStyle: "italic" }}>
+                      &ldquo;{enquiryResult.symptoms}&rdquo;
+                    </p>
+                  </div>
+                  <div>
+                    <span className="ac-mono" style={{ color: "var(--ac-text-muted)", display: "block" }}>PREFERRED CONTACT:</span>
+                    <strong>{enquiryResult.preferredContactMethod}</strong>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-2)" }}>
+                  {(() => {
+                    const enquiryWhatsAppUrl = isGeneralEnquiry
+                      ? generateGeneralEnquiryWhatsAppUrl({
+                          referenceCode: enquiryResult.referenceCode,
+                          subject: enquiryResult.vehicleModel,
+                          customerName: enquiryResult.customerNameMasked,
+                        })
+                      : generateDiagnosticWhatsAppUrl(
+                          enquiryResult.referenceCode,
+                          { make: enquiryResult.vehicleMake, model: enquiryResult.vehicleModel, year: enquiryResult.vehicleYear },
+                          enquiryResult.symptoms,
+                          enquiryResult.customerNameMasked
+                        );
+                    return (
+                      <Button
+                        href={enquiryWhatsAppUrl}
+                        isExternal={Boolean(enquiryWhatsAppUrl)}
+                        variant="whatsapp"
+                        size="md"
+                        leftIcon={<MessageCircle size={16} />}
+                        aria-label={`Chat on WhatsApp regarding enquiry ${enquiryResult.referenceCode}`}
+                      >
+                        {isGeneralEnquiry ? "Follow Up on WhatsApp" : "Chat on WhatsApp"} ({enquiryResult.referenceCode})
+                      </Button>
+                    );
+                  })()}
+                  {!isWhatsAppConfigured() && (
+                    <span style={{ fontSize: "10px", color: "var(--ac-text-muted)", fontStyle: "italic", textAlign: "center" }}>
+                      {getWhatsAppNotice()}
+                    </span>
+                  )}
                 </div>
               </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-2)" }}>
-                <Button
-                  href={generateDiagnosticWhatsAppUrl(
-                    enquiryResult.referenceCode,
-                    { make: enquiryResult.vehicleMake, model: enquiryResult.vehicleModel, year: enquiryResult.vehicleYear },
-                    enquiryResult.symptoms,
-                    enquiryResult.customerNameMasked
-                  )}
-                  isExternal
-                  variant="whatsapp"
-                  size="md"
-                  leftIcon={<MessageCircle size={16} />}
-                >
-                  Chat with Technician on WhatsApp ({enquiryResult.referenceCode})
-                </Button>
-                {!isWhatsAppConfigured() && (
-                  <span style={{ fontSize: "10px", color: "var(--ac-text-muted)", fontStyle: "italic", textAlign: "center" }}>
-                    {getWhatsAppNotice()}
-                  </span>
-                )}
-              </div>
-            </div>
-          </Card>
-        )}
+            </Card>
+          );
+        })()}
       </div>
     </PageContainer>
   );

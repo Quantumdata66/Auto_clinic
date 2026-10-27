@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import {
   staffLoginAction,
+  staffLogoutAction,
   getStaffDashboardDataAction,
   updateDiagnosticEnquiryAction,
   updateOrderStatusAction,
@@ -36,8 +37,8 @@ import { DiagnosticEnquiryStatus, OrderStatus } from "@/types";
 
 export default function AdminDashboardPage() {
   const [session, setSession] = useState<StaffSession | null>(null);
-  const [loginEmail, setLoginEmail] = useState("staff@autoclinic.ng");
-  const [loginPasscode, setLoginPasscode] = useState("AutoClinic2026!Staff");
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPasscode, setLoginPasscode] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
 
@@ -51,27 +52,10 @@ export default function AdminDashboardPage() {
   const [editedStatuses, setEditedStatuses] = useState<{ [key: string]: string }>({});
   const [updateMsg, setUpdateMsg] = useState<{ [key: string]: { success: boolean; text: string } }>({});
 
-  useEffect(() => {
-    // Check sessionStorage on client
-    const saved = sessionStorage.getItem("ac_staff_session");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed.expiresAt > Date.now()) {
-          setSession(parsed);
-        } else {
-          sessionStorage.removeItem("ac_staff_session");
-        }
-      } catch {
-        sessionStorage.removeItem("ac_staff_session");
-      }
-    }
-  }, []);
-
-  const loadDashboardData = async (token: string) => {
+  const loadDashboardData = async () => {
     setDataLoading(true);
     try {
-      const res = await getStaffDashboardDataAction(token);
+      const res = await getStaffDashboardDataAction();
       if (res.success && res.data) {
         setDashboardData(res.data);
       }
@@ -83,10 +67,32 @@ export default function AdminDashboardPage() {
   };
 
   useEffect(() => {
-    if (session) {
-      loadDashboardData(session.token);
-    }
-  }, [session]);
+    // Attempt automatic session load via secure HTTP-only cookie on mount
+    const checkActiveCookieSession = async () => {
+      setDataLoading(true);
+      try {
+        const res = await getStaffDashboardDataAction();
+        if (res.success && res.data && res.staff) {
+          setDashboardData(res.data);
+          setSession({
+            userId: res.staff.userId,
+            email: res.staff.email,
+            name: res.staff.name,
+            role: res.staff.role,
+            expiresAt: Date.now() + 3600000,
+          });
+        } else {
+          setSession(null);
+        }
+      } catch (err) {
+        console.warn("No active staff session cookie found:", err);
+        setSession(null);
+      } finally {
+        setDataLoading(false);
+      }
+    };
+    checkActiveCookieSession();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +103,7 @@ export default function AdminDashboardPage() {
       const res = await staffLoginAction(loginEmail, loginPasscode);
       if (res.success && res.session) {
         setSession(res.session);
-        sessionStorage.setItem("ac_staff_session", JSON.stringify(res.session));
+        await loadDashboardData();
       } else {
         setAuthError(res.error || "Authentication failed. Invalid credentials.");
       }
@@ -108,11 +114,12 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await staffLogoutAction();
     setSession(null);
-    sessionStorage.removeItem("ac_staff_session");
     setDashboardData(null);
   };
+
 
   const handleSaveEnquiry = async (enquiryId: string, currentStatus: DiagnosticEnquiryStatus, currentNotes?: string) => {
     if (!session) return;
@@ -121,10 +128,10 @@ export default function AdminDashboardPage() {
     const notes = editedNotes[enquiryId] !== undefined ? editedNotes[enquiryId] : currentNotes;
 
     try {
-      const res = await updateDiagnosticEnquiryAction(session.token, enquiryId, newStatus, notes);
+      const res = await updateDiagnosticEnquiryAction(undefined, enquiryId, newStatus, notes);
       if (res.success) {
         setUpdateMsg((prev) => ({ ...prev, [enquiryId]: { success: true, text: "Enquiry updated successfully." } }));
-        await loadDashboardData(session.token);
+        await loadDashboardData();
       } else {
         setUpdateMsg((prev) => ({ ...prev, [enquiryId]: { success: false, text: res.error || "Update failed." } }));
       }
@@ -148,10 +155,10 @@ export default function AdminDashboardPage() {
     const newStatus = (editedStatuses[orderId] as OrderStatus) || currentStatus;
 
     try {
-      const res = await updateOrderStatusAction(session.token, orderId, newStatus);
+      const res = await updateOrderStatusAction(undefined, orderId, newStatus);
       if (res.success) {
         setUpdateMsg((prev) => ({ ...prev, [orderId]: { success: true, text: "Order stage updated." } }));
-        await loadDashboardData(session.token);
+        await loadDashboardData();
       } else {
         setUpdateMsg((prev) => ({ ...prev, [orderId]: { success: false, text: res.error || "Update failed." } }));
       }
@@ -173,45 +180,45 @@ export default function AdminDashboardPage() {
     return "₦" + (cents / 100).toLocaleString("en-NG", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   };
 
-  // If not authenticated, display Staff Login Gate
+  // If not authenticated, display Business Admin Login Gate
   if (!session) {
     return (
       <PageContainer
-        title="Staff & Workshop Portal"
-        subtitle="Restricted operational triage, order fulfilment, and technician diagnostic log."
-        breadcrumbs={[{ label: "Staff Login" }]}
+        title="Business & Workshop Administration"
+        subtitle="Operational triage, order fulfilment, and diagnostic enquiry management."
+        breadcrumbs={[{ label: "Business Admin" }]}
         maxWidth="narrow"
         actions={
           <Badge variant="amber" isMonospace size="md">
-            STAFF AUTH REQUIRED
+            ADMIN AUTH REQUIRED
           </Badge>
         }
       >
         <div style={{ maxWidth: "480px", margin: "0 auto", width: "100%" }}>
-          <Card hazardStripe title="STAFF AUTHENTICATION" subtitle="Enter your workshop credentials">
+          <Card hazardStripe title="ADMINISTRATOR AUTHENTICATION" subtitle="Enter your business credentials">
             <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-4)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "var(--ac-space-2)", padding: "var(--ac-space-3)", backgroundColor: "var(--ac-bg-base)", border: "1px solid var(--ac-border-subtle)" }}>
                 <Lock size={16} style={{ color: "var(--ac-accent-amber)" }} />
                 <span style={{ fontSize: "11px", color: "var(--ac-text-secondary)" }}>
-                  Role-based access controls (RBAC) enforced on server.
+                  Server-verified administrator authentication.
                 </span>
               </div>
 
               <Input
-                label="Staff Email"
+                label="Admin Email"
                 type="email"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
-                placeholder="staff@autoclinic.ng"
+                placeholder="admin@autoclinic.ng"
                 required
               />
 
               <Input
-                label="Access Passcode"
+                label="Password"
                 type="password"
                 value={loginPasscode}
                 onChange={(e) => setLoginPasscode(e.target.value)}
-                placeholder="••••••••••••"
+                placeholder="Enter authorized password"
                 required
               />
 
@@ -230,7 +237,7 @@ export default function AdminDashboardPage() {
               )}
 
               <Button type="submit" variant="primary" size="md" disabled={authLoading} style={{ width: "100%" }}>
-                {authLoading ? "Authenticating..." : "Authorize Staff Session"}
+                {authLoading ? "Authenticating..." : "Sign In to Business Portal"}
               </Button>
             </form>
           </Card>
@@ -241,9 +248,9 @@ export default function AdminDashboardPage() {
 
   return (
     <PageContainer
-      title="Admin & Workshop Staff Portal"
+      title="Business Administration Portal"
       subtitle="Operational telemetry, diagnostic appointment queue, and fulfilment controls."
-      breadcrumbs={[{ label: "Admin Portal" }]}
+      breadcrumbs={[{ label: "Business Admin" }]}
       maxWidth="wide"
       actions={
         <div style={{ display: "flex", alignItems: "center", gap: "var(--ac-space-3)" }}>
@@ -345,7 +352,7 @@ export default function AdminDashboardPage() {
               <span style={{ fontSize: "var(--ac-text-xs)", color: "var(--ac-text-secondary)" }}>
                 Enquiry-First Workflow: Review reported symptoms, contact customer via WhatsApp/Phone, and record technician triage notes.
               </span>
-              <Button variant="outline" size="sm" onClick={() => loadDashboardData(session.token)} disabled={dataLoading}>
+              <Button variant="outline" size="sm" onClick={() => loadDashboardData()} disabled={dataLoading}>
                 <RefreshCw size={12} className={dataLoading ? "spin" : ""} />
                 <span>Refresh Queue</span>
               </Button>
@@ -494,7 +501,7 @@ export default function AdminDashboardPage() {
               <span style={{ fontSize: "var(--ac-text-xs)", color: "var(--ac-text-secondary)" }}>
                 Order Fulfilment: Manage warehouse packing, ready-for-collection states, and dispatch updates.
               </span>
-              <Button variant="outline" size="sm" onClick={() => loadDashboardData(session.token)} disabled={dataLoading}>
+              <Button variant="outline" size="sm" onClick={() => loadDashboardData()} disabled={dataLoading}>
                 <RefreshCw size={12} className={dataLoading ? "spin" : ""} />
                 <span>Refresh Orders</span>
               </Button>
