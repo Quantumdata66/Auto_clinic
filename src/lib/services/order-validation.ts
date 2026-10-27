@@ -1,6 +1,8 @@
-import { createServerClient, createAdminClient } from "@/lib/supabase/server";
-import { Product, FulfilmentType } from "@/types";
+import { createServerClient } from "@/lib/supabase/server";
+import type { FulfilmentType } from "@/types";
 import { MOCK_PRODUCTS } from "@/data/mockData";
+
+export const MAX_QUANTITY_PER_PRODUCT = 999;
 
 export interface ClientOrderItemInput {
   productId: string;
@@ -173,32 +175,66 @@ export async function validateOrderItemsAndPricing(
     fieldErrors["fulfilmentType"] = "Must be DELIVERY or WORKSHOP_PICKUP";
   }
 
-  const validatedItems: ValidatedOrderItem[] = [];
-  let subtotalCents = 0;
-  let totalUnits = 0;
+  // 1. Validate each raw input item and aggregate quantities by productId.
+  // This ensures that duplicate product entries cannot circumvent inventory checks.
+  const aggregatedQuantities = new Map<string, number>();
 
   for (let i = 0; i < itemsInput.length; i++) {
     const item = itemsInput[i];
     const itemKey = `items[${i}]`;
 
-    if (!item.productId || typeof item.productId !== "string") {
+    if (!item.productId || typeof item.productId !== "string" || item.productId.trim().length === 0) {
       errors.push(`Item #${i + 1} is missing a valid product ID.`);
       fieldErrors[`${itemKey}.productId`] = "Missing product ID";
       continue;
     }
 
+    const cleanProductId = item.productId.trim();
     const qty = Number(item.quantity);
+
     if (!Number.isInteger(qty) || qty <= 0) {
       errors.push(`Item #${i + 1} has an invalid quantity (${item.quantity}). Quantity must be a positive integer.`);
       fieldErrors[`${itemKey}.quantity`] = "Quantity must be an integer >= 1";
       continue;
     }
 
+    const currentTotal = aggregatedQuantities.get(cleanProductId) || 0;
+    const newTotal = currentTotal + qty;
+
+    if (newTotal > MAX_QUANTITY_PER_PRODUCT) {
+      errors.push(
+        `Combined quantity for product "${cleanProductId}" exceeds maximum allowed order limit of ${MAX_QUANTITY_PER_PRODUCT} units.`
+      );
+      fieldErrors[`${itemKey}.quantity`] = `Aggregated quantity exceeds limit of ${MAX_QUANTITY_PER_PRODUCT}`;
+      continue;
+    }
+
+    aggregatedQuantities.set(cleanProductId, newTotal);
+  }
+
+  // If initial input structure, type, or quantity limits failed, abort before DB lookups
+  if (errors.length > 0) {
+    return {
+      isValid: false,
+      errors,
+      fieldErrors,
+    };
+  }
+
+  const validatedItems: ValidatedOrderItem[] = [];
+  let subtotalCents = 0;
+  let totalUnits = 0;
+
+  // 2. Authoritative product validation and stock check against combined quantities
+  let itemIndex = 0;
+  for (const [productId, totalQty] of aggregatedQuantities.entries()) {
+    const itemKey = `items[${itemIndex++}]`;
+
     // Authoritative Product Fetch
-    const product = await fetchAuthoritativeProduct(item.productId);
+    const product = await fetchAuthoritativeProduct(productId);
 
     if (!product) {
-      errors.push(`Product with ID "${item.productId}" does not exist in the catalogue.`);
+      errors.push(`Product with ID "${productId}" does not exist in the catalogue.`);
       fieldErrors[`${itemKey}.productId`] = "Product not found";
       continue;
     }
@@ -209,11 +245,11 @@ export async function validateOrderItemsAndPricing(
       continue;
     }
 
-    // Stock verification
+    // Stock verification against aggregated requested quantity
     const availableStock = product.quantityOnHand - product.quantityReserved;
-    if (availableStock < qty && !product.allowBackorder) {
+    if (availableStock < totalQty && !product.allowBackorder) {
       errors.push(
-        `Insufficient stock for "${product.name}" (${product.sku}). Requested: ${qty}, Available: ${Math.max(0, availableStock)}.`
+        `Insufficient stock for "${product.name}" (${product.sku}). Requested: ${totalQty}, Available: ${Math.max(0, availableStock)}.`
       );
       fieldErrors[`${itemKey}.stock`] = `Only ${Math.max(0, availableStock)} unit(s) available in stock`;
       continue;
@@ -221,17 +257,17 @@ export async function validateOrderItemsAndPricing(
 
     // Authoritative calculations
     const unitPriceCents = product.priceCents;
-    const lineTotalCents = unitPriceCents * qty;
+    const lineTotalCents = unitPriceCents * totalQty;
 
     subtotalCents += lineTotalCents;
-    totalUnits += qty;
+    totalUnits += totalQty;
 
     validatedItems.push({
       productId: product.id,
       skuSnapshot: product.sku,
       productNameSnapshot: product.name,
       unitPriceCentsSnapshot: unitPriceCents,
-      quantity: qty,
+      quantity: totalQty,
       lineTotalCents,
     });
   }

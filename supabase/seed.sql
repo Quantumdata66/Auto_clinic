@@ -20,7 +20,7 @@ INSERT INTO products (
 )
 VALUES
   (
-    'p1000000-0000-0000-0000-000000000001',
+    'a1000000-0000-0000-0000-000000000001',
     'AC-DEV-OBD802',
     'Auto Clinic Pro-Scan V2 OBD2 Scanner',
     'pro-scan-v2-obd2-scanner',
@@ -41,7 +41,7 @@ VALUES
     '["Universal OBD2 (Petrol 1996+, Diesel 2004+)", "Toyota", "Honda", "Mercedes-Benz", "BMW", "Ford", "Hyundai", "Kia"]'::jsonb
   ),
   (
-    'p1000000-0000-0000-0000-000000000002',
+    'a1000000-0000-0000-0000-000000000002',
     'AC-DEV-BAT1224',
     'Heavy-Duty 12V/24V Digital Battery Analyzer',
     'heavy-duty-battery-analyzer',
@@ -61,7 +61,7 @@ VALUES
     '["Lead-Acid", "AGM Flat/Spiral", "GEL", "EFB 12V/24V Systems"]'::jsonb
   ),
   (
-    'p1000000-0000-0000-0000-000000000003',
+    'a1000000-0000-0000-0000-000000000003',
     'AC-DEV-INF150P',
     'Industrial 150 PSI Dual-Cylinder Tyre Inflator',
     'industrial-dual-cylinder-tyre-inflator',
@@ -81,7 +81,7 @@ VALUES
     '["Sedans", "SUVs", "Light Commercial Trucks", "4x4 Vehicles"]'::jsonb
   ),
   (
-    'p1000000-0000-0000-0000-000000000004',
+    'a1000000-0000-0000-0000-000000000004',
     'AC-DEV-TORQ12',
     '1/2-Inch Drive Precision Click Torque Wrench',
     'precision-click-torque-wrench',
@@ -101,7 +101,7 @@ VALUES
     '["Wheel Nuts", "Cylinder Head Bolts", "Suspension & Brake Assemblies"]'::jsonb
   ),
   (
-    'p1000000-0000-0000-0000-000000000005',
+    'a1000000-0000-0000-0000-000000000005',
     'AC-DEV-JMP2000',
     '2000A Peak Lithium Emergency Jump Starter',
     'lithium-emergency-jump-starter',
@@ -121,7 +121,7 @@ VALUES
     '["Up to 8.0L Petrol", "Up to 6.0L Diesel Engines"]'::jsonb
   ),
   (
-    'p1000000-0000-0000-0000-000000000006',
+    'a1000000-0000-0000-0000-000000000006',
     'AC-DEV-BOR1080',
     'Dual-Lens HD Articulating Borescope Camera',
     'dual-lens-borescope-camera',
@@ -145,12 +145,12 @@ ON CONFLICT (sku) DO NOTHING;
 -- 3. Insert Inventory Records
 INSERT INTO inventory (product_id, quantity_on_hand, quantity_reserved, low_stock_threshold, allow_backorder)
 VALUES
-  ('p1000000-0000-0000-0000-000000000001', 14, 0, 5, false),
-  ('p1000000-0000-0000-0000-000000000002', 8,  0, 4, false),
-  ('p1000000-0000-0000-0000-000000000003', 3,  0, 5, false),
-  ('p1000000-0000-0000-0000-000000000004', 19, 0, 5, false),
-  ('p1000000-0000-0000-0000-000000000005', 7,  0, 3, false),
-  ('p1000000-0000-0000-0000-000000000006', 0,  0, 3, true)
+  ('a1000000-0000-0000-0000-000000000001', 14, 0, 5, false),
+  ('a1000000-0000-0000-0000-000000000002', 8,  0, 4, false),
+  ('a1000000-0000-0000-0000-000000000003', 3,  0, 5, false),
+  ('a1000000-0000-0000-0000-000000000004', 19, 0, 5, false),
+  ('a1000000-0000-0000-0000-000000000005', 7,  0, 3, false),
+  ('a1000000-0000-0000-0000-000000000006', 0,  0, 3, true)
 ON CONFLICT (product_id) DO NOTHING;
 
 -- 4. Insert Diagnostic Services
@@ -160,7 +160,7 @@ INSERT INTO diagnostic_services (
 )
 VALUES
   (
-    's1000000-0000-0000-0000-000000000001',
+    'd1000000-0000-0000-0000-000000000001',
     'DIAG-ECU-01',
     'Full ECU Scan & Diagnostic Fault Analysis',
     'ecu-fault-code-scan',
@@ -173,7 +173,7 @@ VALUES
     1
   ),
   (
-    's1000000-0000-0000-0000-000000000002',
+    'd1000000-0000-0000-0000-000000000002',
     'DIAG-ELEC-02',
     'Electrical System & Parasitic Drain Triage',
     'electrical-system-triage',
@@ -186,7 +186,7 @@ VALUES
     2
   ),
   (
-    's1000000-0000-0000-0000-000000000003',
+    'd1000000-0000-0000-0000-000000000003',
     'DIAG-MECH-03',
     'Engine Mechanical Health & Compression Triage',
     'engine-mechanical-triage',
@@ -199,7 +199,7 @@ VALUES
     3
   ),
   (
-    's1000000-0000-0000-0000-000000000004',
+    'd1000000-0000-0000-0000-000000000004',
     'DIAG-PRE-04',
     'Pre-Purchase Comprehensive Vehicle Inspection',
     'pre-purchase-inspection',

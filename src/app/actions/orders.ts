@@ -1,19 +1,20 @@
 "use server";
 
-import { createAdminClient, createServerClient } from "@/lib/supabase/server";
-import {
-  validateOrderItemsAndPricing,
+import { createAdminClient } from "@/lib/supabase/server";
+import { validateOrderItemsAndPricing } from "@/lib/services/order-validation";
+import type {
   ClientOrderItemInput,
   ValidatedOrderItem,
 } from "@/lib/services/order-validation";
-import {
+import { maskCustomerName } from "@/types";
+import type {
   Order,
   OrderStatus,
   PaymentStatus,
   FulfilmentType,
   PublicOrderTrackingView,
-  maskCustomerName,
 } from "@/types";
+import { normalizeNigerianPhone } from "@/lib/utils/phone";
 import { MOCK_PRODUCTS } from "@/data/mockData";
 
 export interface CreateOrderInput {
@@ -49,22 +50,14 @@ export interface LookupOrderResult {
   error?: string;
 }
 
-// In-Memory Idempotency & Order Cache for development & immediate deduplication
-interface IdempotencyEntry {
-  order: Order;
-  timestamp: number;
-}
-const IDEMPOTENCY_STORE = new Map<string, IdempotencyEntry>();
-const IDEMPOTENCY_TTL_MS = 10 * 60 * 1000; // 10 minutes
-
-// In-Memory Dev Order Store (for mock/dev execution when live Supabase is not connected)
-const DEV_ORDERS_STORE = new Map<string, Order>();
-
-// In-Memory Dev Inventory Lock Store (tracks live reservations across requests in dev mode)
-const DEV_INVENTORY_RESERVATIONS = new Map<string, number>();
-
-// Concurrency mutex lock for simulated transactional execution
-let devTransactionLock = Promise.resolve();
+// Import in-memory mock/dev stores and mutex lock from dedicated non-server service
+import {
+  IDEMPOTENCY_STORE,
+  IDEMPOTENCY_TTL_MS,
+  DEV_ORDERS_STORE,
+  DEV_INVENTORY_RESERVATIONS,
+  acquireDevTransactionLock,
+} from "@/lib/services/dev-order-store";
 
 /**
  * Checks if Supabase connection is active with non-placeholder credentials.
@@ -124,8 +117,21 @@ export async function createOrderAction(
     if (!input.customer?.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.customer.email.trim())) {
       fieldErrors["customer.email"] = "A valid email address is required";
     }
-    if (!input.customer?.phone || input.customer.phone.trim().length < 8) {
-      fieldErrors["customer.phone"] = "A valid contact phone number is required";
+    const normalizedPhone = normalizeNigerianPhone(input.customer?.phone);
+    if (!normalizedPhone) {
+      fieldErrors["customer.phone"] =
+        "A valid Nigerian contact phone number is required (e.g. 0803 123 4567 or +234...)";
+    }
+
+    let normalizedWhatsapp: string | undefined = undefined;
+    if (input.customer?.whatsappNumber && input.customer.whatsappNumber.trim().length > 0) {
+      const parsedWhatsapp = normalizeNigerianPhone(input.customer.whatsappNumber);
+      if (!parsedWhatsapp) {
+        fieldErrors["customer.whatsappNumber"] =
+          "Please enter a valid Nigerian WhatsApp number (e.g. 0803 123 4567) or leave blank";
+      } else {
+        normalizedWhatsapp = parsedWhatsapp.e164;
+      }
     }
 
     // 3. Validate Fulfilment and Address Details
@@ -178,7 +184,7 @@ export async function createOrderAction(
       idempotencyKey: input.idempotencyKey,
       customerName: customerFullName,
       customerEmail: input.customer.email.trim().toLowerCase(),
-      customerPhone: input.customer.phone.trim(),
+      customerPhone: normalizedPhone ? normalizedPhone.e164 : input.customer.phone.trim(),
       channel: input.paymentMethod === "WHATSAPP_CONFIRM" ? "WHATSAPP" : "ONLINE_CHECKOUT",
       fulfilmentType,
       currency: "NGN",
@@ -228,7 +234,7 @@ export async function createOrderAction(
             p_customer_last_name: input.customer.lastName.trim(),
             p_customer_email: orderData.customerEmail,
             p_customer_phone: orderData.customerPhone,
-            p_customer_whatsapp: input.customer.whatsappNumber?.trim() || null,
+            p_customer_whatsapp: normalizedWhatsapp || orderData.customerPhone,
             p_channel: orderData.channel,
             p_fulfilment_type: orderData.fulfilmentType,
             p_currency: orderData.currency,
@@ -272,12 +278,7 @@ export async function createOrderAction(
       }
     } else {
       // Dev mode serialized execution mutex to simulate transactional row locking
-      let releaseMutex: () => void;
-      const nextLock = new Promise<void>((resolve) => {
-        releaseMutex = resolve;
-      });
-      const prevLock = devTransactionLock;
-      devTransactionLock = nextLock;
+      const { prevLock, releaseMutex } = acquireDevTransactionLock();
 
       await prevLock;
       try {
@@ -385,8 +386,11 @@ export async function lookupOrderStatusAction(
   // Check in-memory dev store first
   const devOrder = DEV_ORDERS_STORE.get(cleanOrderNum);
   if (devOrder) {
+    const normDevPhone = normalizeNigerianPhone(devOrder.customerPhone);
+    const normInputPhone = normalizeNigerianPhone(cleanContact);
     const contactMatches =
       devOrder.customerEmail.toLowerCase() === cleanContact ||
+      (normDevPhone && normInputPhone && normDevPhone.e164 === normInputPhone.e164) ||
       devOrder.customerPhone.replace(/[^0-9]/g, "") === cleanContact.replace(/[^0-9]/g, "");
 
     if (contactMatches) {
@@ -414,12 +418,20 @@ export async function lookupOrderStatusAction(
       .eq("order_number", cleanOrderNum)
       .maybeSingle();
 
-    if (error || !data) {
+    if (error) {
+      console.error("Database query error in lookupOrderStatusAction:", error);
+      return { found: false, error: "Database error while retrieving order status. Please try again." };
+    }
+
+    if (!data) {
       return { found: false, error: "Order not found. Please verify the order number." };
     }
 
     const row = data as any;
+    const normRowPhone = normalizeNigerianPhone(row.customer_phone);
+    const normInputPhone = normalizeNigerianPhone(cleanContact);
     const phoneMatch =
+      (normRowPhone && normInputPhone && normRowPhone.e164 === normInputPhone.e164) ||
       row.customer_phone?.replace(/[^0-9]/g, "") === cleanContact.replace(/[^0-9]/g, "");
     const emailMatch = row.customer_email?.toLowerCase() === cleanContact;
 

@@ -54,6 +54,7 @@ export default function CheckoutPage() {
 
   // Initialize unique idempotency key for this checkout session
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIdempotencyKey(crypto.randomUUID());
   }, []);
 
@@ -272,10 +273,11 @@ export default function CheckoutPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-2)", marginTop: "var(--ac-space-4)" }}>
                 <Button
                   href={whatsappFollowupUrl}
-                  isExternal
+                  isExternal={Boolean(whatsappFollowupUrl)}
                   variant="whatsapp"
                   size="lg"
                   leftIcon={<MessageCircle size={18} />}
+                  aria-label={`Confirm payment and dispatch on WhatsApp for order ${completedOrder.orderNumber}`}
                 >
                   Confirm Payment &amp; Dispatch on WhatsApp
                 </Button>

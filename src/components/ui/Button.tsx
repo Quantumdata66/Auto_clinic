@@ -62,7 +62,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         return;
       }
       if (props.onClick) {
-        props.onClick(e as any);
+        props.onClick(e as React.MouseEvent<HTMLButtonElement>);
       }
     };
 

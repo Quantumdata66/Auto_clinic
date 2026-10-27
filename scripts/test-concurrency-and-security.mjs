@@ -45,7 +45,7 @@ async function runSecuritySuite() {
   // 1b. Order Tracking Projection Sanitization
   const sampleOrder = await createOrderAction({
     idempotencyKey: "audit-idem-" + Date.now(),
-    items: [{ productId: "p1000000-0000-0000-0000-000000000001", quantity: 1 }],
+    items: [{ productId: "a1000000-0000-0000-0000-000000000001", quantity: 1 }],
     customer: {
       firstName: "Babajide",
       lastName: "Sanwo",
@@ -100,7 +100,7 @@ async function runSecuritySuite() {
   const sharedIdempotencyKey = "concurrent-idempotency-" + Date.now();
   const concurrentDuplicatePayload = {
     idempotencyKey: sharedIdempotencyKey,
-    items: [{ productId: "p1000000-0000-0000-0000-000000000002", quantity: 1 }],
+    items: [{ productId: "a1000000-0000-0000-0000-000000000002", quantity: 1 }],
     customer: {
       firstName: "Emeka",
       lastName: "Nnamdi",
@@ -137,7 +137,7 @@ async function runSecuritySuite() {
   // Product 4: AC-DEV-TORQ12 has initial quantity = 19
   // We'll test placing 20 orders of 1 unit in parallel.
   // 19 should succeed, and exactly 1 should be rejected with Insufficient Stock.
-  const concurrencyProduct = "p1000000-0000-0000-0000-000000000004";
+  const concurrencyProduct = "a1000000-0000-0000-0000-000000000004";
   const parallelOrders = [];
 
   for (let i = 0; i < 20; i++) {

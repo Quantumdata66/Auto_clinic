@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
-import { Product, StockStatus } from "@/types";
+import { Product } from "@/types";
 
 export interface CartItemState {
   product: Product;
@@ -47,6 +47,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
               product: item.productSnapshot,
               quantity: Math.max(1, Math.floor(item.quantity)),
             }));
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setItems(validated);
         }
       }

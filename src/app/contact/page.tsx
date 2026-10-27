@@ -1,40 +1,93 @@
 "use client";
 
 import React, { useState } from "react";
-import { MapPin, Phone, MessageCircle, Clock, Mail, AlertCircle, Wrench, CheckCircle2 } from "lucide-react";
+import {
+  MapPin,
+  Clock,
+  AlertCircle,
+  Wrench,
+  CheckCircle2,
+  MessageCircle,
+  Search,
+  RefreshCw,
+  Send,
+} from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { buildWhatsAppUrl, isWhatsAppConfigured } from "@/lib/utils/whatsapp";
+import { Toast } from "@/components/ui/Toast";
+import { submitContactEnquiryAction } from "@/app/actions/diagnostics";
+import {
+  generateGeneralEnquiryWhatsAppUrl,
+  isWhatsAppConfigured,
+} from "@/lib/utils/whatsapp";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
-    contact: "",
+    phone: "",
+    email: "",
     subject: "",
     message: "",
   });
-  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [submittedRef, setSubmittedRef] = useState<string | null>(null);
 
-  const whatsappUrl = buildWhatsAppUrl("Hello Auto Clinic, I have a workshop/store enquiry.");
+  const whatsappUrl = generateGeneralEnquiryWhatsAppUrl();
   const hasWhatsApp = isWhatsAppConfigured();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+    setFieldErrors({});
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      const res = await submitContactEnquiryAction({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email ? formData.email : undefined,
+        subject: formData.subject,
+        message: formData.message,
+      });
+
+      if (res.success && res.referenceCode) {
+        setSubmittedRef(res.referenceCode);
+      } else {
+        setErrorMessage(res.error || "Failed to submit enquiry. Please review the highlighted fields.");
+        if (res.fieldErrors) {
+          setFieldErrors(res.fieldErrors);
+        }
+      }
+    } catch (err) {
+      console.error("Enquiry submission error:", err);
+      setErrorMessage("A network or system error occurred while submitting your enquiry. Please try again or reach out on WhatsApp.");
+    } finally {
       setLoading(false);
-      setSubmitted(true);
-    }, 600);
+    }
+  };
+
+  const handleReset = () => {
+    setSubmittedRef(null);
+    setErrorMessage(null);
+    setFieldErrors({});
+    setFormData({
+      name: "",
+      phone: "",
+      email: "",
+      subject: "",
+      message: "",
+    });
   };
 
   return (
     <PageContainer
       title="Workshop Location & Contact"
-      subtitle="Connect with Auto Clinic technicians regarding vehicle diagnostics, order status, or tool technical specifications."
+      subtitle="Connect with Auto Clinic regarding vehicle diagnostics, order status, or tool technical specifications."
       breadcrumbs={[{ label: "Contact & Location" }]}
       maxWidth="default"
     >
@@ -86,6 +139,7 @@ export default function ContactPage() {
                 variant="whatsapp"
                 size="md"
                 leftIcon={<MessageCircle size={16} />}
+                aria-label="Chat with Auto Clinic on WhatsApp"
               >
                 {hasWhatsApp ? "Chat on WhatsApp" : "WhatsApp (Pending Line Setup)"}
               </Button>
@@ -95,7 +149,7 @@ export default function ContactPage() {
 
         {/* General Message Form */}
         <Card title="SEND GENERAL ENQUIRY" subtitle="Message support team directly">
-          {submitted ? (
+          {submittedRef ? (
             <div
               style={{
                 padding: "var(--ac-space-6)",
@@ -104,65 +158,156 @@ export default function ContactPage() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: "var(--ac-space-3)",
+                gap: "var(--ac-space-4)",
                 textAlign: "center",
               }}
             >
-              <CheckCircle2 size={32} style={{ color: "var(--ac-status-success)" }} />
+              <CheckCircle2 size={36} style={{ color: "var(--ac-status-success)" }} />
               <div>
-                <strong style={{ display: "block", color: "var(--ac-text-primary)", fontSize: "var(--ac-text-sm)", marginBottom: "4px" }}>
-                  Enquiry Recorded Successfully (Staging Demo Mode)
+                <strong style={{ display: "block", color: "var(--ac-text-primary)", fontSize: "var(--ac-text-base)", marginBottom: "6px" }}>
+                  Enquiry Successfully Recorded
                 </strong>
-                <p style={{ fontSize: "var(--ac-text-xs)", color: "var(--ac-text-secondary)", margin: 0, maxWidth: "480px" }}>
-                  Thank you, <strong>{formData.name}</strong>. Your enquiry regarding &quot;{formData.subject || "General Consultation"}&quot; has been received. Our team will review your message.
+                <p style={{ fontSize: "var(--ac-text-xs)", color: "var(--ac-text-secondary)", margin: "0 auto var(--ac-space-3)", maxWidth: "520px" }}>
+                  Thank you, <strong>{formData.name}</strong>. Your enquiry regarding &quot;{formData.subject || "General Consultation"}&quot; has been logged into our workshop triage system. We will contact you at <strong>{formData.phone}</strong>.
                 </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setSubmitted(false);
-                  setFormData({ name: "", contact: "", subject: "", message: "" });
+
+              {/* Reference Box */}
+              <div
+                className="ac-panel"
+                style={{
+                  backgroundColor: "var(--ac-bg-base)",
+                  border: "1px dashed var(--ac-border-subtle)",
+                  padding: "var(--ac-space-4)",
+                  width: "100%",
+                  maxWidth: "420px",
                 }}
               >
-                Send Another Message
-              </Button>
+                <span className="ac-mono" style={{ fontSize: "11px", color: "var(--ac-accent-amber)", display: "block", marginBottom: "4px" }}>
+                  YOUR TRACKING REFERENCE CODE:
+                </span>
+                <span
+                  className="ac-mono"
+                  style={{
+                    fontSize: "var(--ac-text-lg)",
+                    fontWeight: 700,
+                    letterSpacing: "1px",
+                    color: "var(--ac-text-primary)",
+                    display: "block",
+                  }}
+                >
+                  {submittedRef}
+                </span>
+                <span style={{ fontSize: "11px", color: "var(--ac-text-muted)", display: "block", marginTop: "4px" }}>
+                  Use this reference code and your phone number anytime on our Status Tracker to view updates.
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--ac-space-3)", justifyContent: "center" }}>
+                <Button
+                  href="/track"
+                  variant="primary"
+                  size="md"
+                  leftIcon={<Search size={16} />}
+                >
+                  Track Status Online
+                </Button>
+
+                {hasWhatsApp && (
+                  <Button
+                    href={generateGeneralEnquiryWhatsAppUrl({
+                      referenceCode: submittedRef,
+                      subject: formData.subject,
+                      customerName: formData.name,
+                    })}
+                    isExternal
+                    variant="whatsapp"
+                    size="md"
+                    leftIcon={<MessageCircle size={16} />}
+                    aria-label={`Follow up on enquiry ${submittedRef} on WhatsApp`}
+                  >
+                    Follow Up on WhatsApp
+                  </Button>
+                )}
+
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={handleReset}
+                >
+                  Send Another Message
+                </Button>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-4)" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--ac-space-3)" }}>
+              {errorMessage && (
+                <Toast
+                  type="error"
+                  title="SUBMISSION ERROR"
+                  message={errorMessage}
+                />
+              )}
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "var(--ac-space-3)" }}>
                 <Input
-                  label="Your Name"
+                  label="Your Full Name"
                   placeholder="e.g. Samuel Ade"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  error={fieldErrors["name"]}
                   required
                 />
                 <Input
-                  label="Email / Phone Number"
-                  placeholder="e.g. samuel@example.com / 080..."
-                  value={formData.contact}
-                  onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+                  label="Phone Number (Nigerian Mobile)"
+                  placeholder="e.g. 08012345678 or +234..."
+                  helperText="Required for tracking and triage updates"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  error={fieldErrors["phone"]}
                   required
                 />
               </div>
-              <Input
-                label="Subject"
-                placeholder="e.g. Diagnostic Tool Compatibility / Workshop Query"
-                value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                required
-              />
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "var(--ac-space-3)" }}>
+                <Input
+                  label="Email Address (Optional)"
+                  type="email"
+                  placeholder="e.g. samuel@example.com"
+                  helperText="Optional for email correspondence"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  error={fieldErrors["email"]}
+                />
+                <Input
+                  label="Subject"
+                  placeholder="e.g. Diagnostic Scanner Compatibility / Fault Triage"
+                  value={formData.subject}
+                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  error={fieldErrors["subject"]}
+                  required
+                />
+              </div>
+
               <Textarea
                 label="Message Details"
-                placeholder="Type your questions regarding equipment or workshop services..."
+                placeholder="Describe your equipment question, vehicle symptoms, or workshop query..."
                 rows={4}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                error={fieldErrors["message"]}
                 required
               />
-              <Button type="submit" variant="primary" size="md" disabled={loading}>
-                {loading ? "Sending..." : "Send Message"}
+
+              <Button
+                type="submit"
+                variant="primary"
+                size="md"
+                disabled={loading}
+                leftIcon={loading ? <RefreshCw size={16} className="ac-spin" /> : <Send size={16} />}
+              >
+                {loading ? "Submitting Enquiry..." : "Send Enquiry Message"}
               </Button>
             </form>
           )}

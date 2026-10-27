@@ -3,12 +3,12 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, Wrench, MessageCircle, ShieldCheck, User, ShoppingBag } from "lucide-react";
+import { X, Wrench, MessageCircle, ShieldCheck, ShoppingBag } from "lucide-react";
 import { NAV_ITEMS } from "./Navigation";
 import { Button } from "../ui/Button";
 import styles from "./MobileNavigation.module.css";
 
-import { buildWhatsAppUrl } from "@/lib/utils/whatsapp";
+import { generateGeneralEnquiryWhatsAppUrl } from "@/lib/utils/whatsapp";
 
 export interface MobileNavigationProps {
   isOpen: boolean;
@@ -36,7 +36,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ isOpen, onCl
 
   if (!isOpen) return null;
 
-  const whatsappUrl = buildWhatsAppUrl("Hello Auto Clinic, I have an automotive enquiry.");
+  const whatsappUrl = generateGeneralEnquiryWhatsAppUrl();
 
   return (
     <div className={styles.overlay} onClick={onClose} role="presentation">
@@ -91,13 +91,13 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ isOpen, onCl
           <div className={styles.quickLinks}>
             <span className={styles.menuHeading}>CUSTOMER UTILITIES</span>
             <div className={styles.utilLinks}>
-              <Link href="/account" className={styles.utilLink} onClick={onClose}>
-                <User size={16} />
-                <span>Customer Account / Login</span>
+              <Link href="/track" className={styles.utilLink} onClick={onClose}>
+                <ShoppingBag size={16} />
+                <span>Track Order / Enquiry</span>
               </Link>
               <Link href="/admin" className={styles.utilLink} onClick={onClose}>
                 <ShieldCheck size={16} />
-                <span>Admin Staff Portal</span>
+                <span>Business Admin</span>
               </Link>
             </div>
           </div>
@@ -106,13 +106,14 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ isOpen, onCl
         <div className={styles.footer}>
           <Button
             href={whatsappUrl}
-            isExternal
+            isExternal={Boolean(whatsappUrl)}
             variant="whatsapp"
             size="md"
             leftIcon={<MessageCircle size={16} />}
             className={styles.fullWidthBtn}
+            aria-label="Contact Auto Clinic on WhatsApp"
           >
-            Chat with Technician (WhatsApp)
+            Chat on WhatsApp
           </Button>
           <p className={styles.disclaimer}>
             Nigeria Automotive Workshop &amp; Tools Store

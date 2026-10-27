@@ -117,10 +117,11 @@ export const DiagnosticEnquiryForm: React.FC = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--ac-space-2)", marginTop: "var(--ac-space-4)" }}>
             <Button
               href={whatsappFollowupUrl}
-              isExternal
+              isExternal={Boolean(whatsappFollowupUrl)}
               variant="whatsapp"
               size="md"
               leftIcon={<MessageCircle size={16} />}
+              aria-label={`Message technician on WhatsApp regarding enquiry ${submittedRef}`}
             >
               Message Technician on WhatsApp ({submittedRef})
             </Button>
